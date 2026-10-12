@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>집에서 영어 회화</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: day picker home -> day view with 3 stage buttons, script list, and a fixed bottom player sheet. */
+:root{
+  --bg:#EFF3F0; --surface:#FFFFFF; --ink:#16231E; --muted:#56675F; --line:#D3DCD7;
+  --a:#2B58D1; --a-soft:#E3EAFB; --b:#A94F14; --b-soft:#F8E8DB;
+  --accent:#1B7556; --on-accent:#FFFFFF; --accent-soft:#DDF0E8;
+  --font-ui:"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-en:"Newsreader",Georgia,"Times New Roman",serif;
+  --shadow:0 -6px 24px rgba(20,40,32,.12);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1613; --surface:#18221E; --ink:#E7EFEB; --muted:#9BAEA6; --line:#2A3832;
+  --a:#8FAAFF; --a-soft:#1C2646; --b:#F2A56B; --b-soft:#3A2517;
+  --accent:#4DC59A; --on-accent:#06140E; --accent-soft:#17352B; --shadow:0 -6px 24px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1613; --surface:#18221E; --ink:#E7EFEB; --muted:#9BAEA6; --line:#2A3832;
+  --a:#8FAAFF; --a-soft:#1C2646; --b:#F2A56B; --b-soft:#3A2517;
+  --accent:#4DC59A; --on-accent:#06140E; --accent-soft:#17352B; --shadow:0 -6px 24px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;padding-inline:16px}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 40px}
+.wrap.playing{padding-bottom:300px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1{font-size:1.5rem;line-height:1.25;margin:0;text-wrap:balance}
+h2{font-size:1.15rem;margin:0;text-wrap:balance}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.sub{color:var(--muted);font-size:.9rem;margin:4px 0 0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-weight:500}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700}
+.btn.small{padding:6px 10px;font-size:.85rem}
+.progress{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin:10px 0 16px}
+.progress>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.tab{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.88rem}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.day{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;min-width:0}
+.day b{font-size:.78rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between}
+.day span{font-size:.92rem;font-weight:500;overflow-wrap:anywhere}
+.day.done{border-color:var(--accent);background:var(--accent-soft)}
+.day.done b{color:var(--accent)}
+.stages{display:grid;gap:10px;margin:14px 0}
+.stage{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px}
+.stage small{color:var(--muted);grid-column:1}
+.stage .tag{grid-row:1/3;grid-column:2;font-size:.78rem;border-radius:999px;padding:3px 10px;background:var(--line);color:var(--muted)}
+.stage.done .tag{background:var(--accent);color:var(--on-accent)}
+.script{display:grid;gap:2px;margin-top:10px}
+.pair{display:grid;gap:2px;padding-block:3px;border-bottom:1px solid var(--line)}
+.pair:last-child{border-bottom:0}
+.line{display:flex;align-items:baseline;gap:8px;max-width:100%;border-radius:6px;padding:2px 6px;text-align:left;border:0;background:none;min-width:0;width:100%}
+.line .who{flex:none;width:1.1em;font-size:.82rem;font-weight:700}
+.line.A .who{color:var(--a)} .line.B .who{color:var(--b)}
+.line .en{font-family:var(--font-en);font-size:1rem;line-height:1.35;font-weight:500;overflow-wrap:anywhere}
+.line.A .en{color:var(--ink)} .line.B .en{color:var(--ink)}
+.line.on{background:var(--accent-soft)}
+details.set{margin-top:18px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px}
+details.set summary{cursor:pointer;font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.grid2 label{display:grid;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;max-width:100%}
+.chk{display:flex!important;grid-auto-flow:column;align-items:center;gap:8px;color:var(--ink)!important}
+.note{font-size:.82rem;color:var(--muted);margin:10px 0 0}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--shadow);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:5}
+.sheet-in{max-width:720px;margin:0 auto;display:grid;gap:10px}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--muted)}
+.now{min-height:92px;display:grid;gap:4px;align-content:center}
+.now .badge{justify-self:start;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:999px}
+.badge.A{background:var(--a-soft);color:var(--a)} .badge.B{background:var(--b-soft);color:var(--b)} .badge.you{background:var(--accent);color:var(--on-accent)}
+.now .en{font-family:var(--font-en);font-size:1.35rem;line-height:1.3;font-weight:600;overflow-wrap:anywhere}
+.now .ko{font-size:1rem;overflow-wrap:anywhere}
+.bar{height:10px;border-radius:10px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);width:0}
+.ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ctl .btn{min-width:64px}
+.pill{font-variant-numeric:tabular-nums}
+.speakcard{display:grid;gap:8px;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:18px;min-height:150px;align-content:center}
+.speakcard:hover{border-color:var(--accent)}
+.speakcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.speakcard .big{font-size:1.4rem;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.speakcard .cue{color:var(--muted);font-size:.9rem}
+.mic{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle}
+.listen .mic{animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(27,117,86,.5)}100%{box-shadow:0 0 0 14px rgba(27,117,86,0)}}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.res{display:grid;gap:12px;margin-top:14px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px}
+.res h3{margin:0;font-size:.82rem;color:var(--muted);letter-spacing:.04em}
+.fb{font-size:1.05rem;font-weight:700}
+.fb.good{color:var(--accent)} .fb.mid{color:var(--b)} .fb.low{color:var(--a)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:grid;text-align:center;border-radius:10px;padding:4px 8px;border:1px solid var(--line);min-width:0}
+.chip b{font-family:var(--font-en);font-size:1rem;font-weight:500}
+.chip small{font-size:.78rem;color:var(--muted)}
+.chip.ok{background:var(--accent-soft);border-color:var(--accent)}
+.chip.miss{background:var(--b-soft);border-color:var(--b)}
+.heard{font-size:1.15rem;font-weight:500;overflow-wrap:anywhere}
+.tip{font-size:.92rem;background:var(--b-soft);border-radius:10px;padding:8px 12px}
+.sumrow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.sumrow .en{font-family:var(--font-en);overflow-wrap:anywhere}
+.warn{background:var(--b-soft);border-radius:10px;padding:10px 12px;font-size:.9rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+<div class="sheet" id="sheet" hidden></div>
+
+<script>
+var DATA=[{"t":"아침 인사","e":"Morning Greetings","p":[["Good morning! Did you sleep well?","좋은 아침! 잘 잤어?","Yes, I slept like a log. How about you?","응, 푹 잤어. 너는?"],["What's the plan for today?","오늘 계획이 뭐야?","I have a meeting at ten, and then I'll be home early.","열 시에 회의가 있고, 그다음엔 일찍 집에 올 거야."],["Do you want some coffee?","커피 마실래?","Yes, please. Just a little milk.","응, 부탁해. 우유만 조금."],["It looks cold outside.","밖이 추워 보여.","Then I should take a jacket.","그럼 재킷을 가져가야겠다."],["Have a good day!","좋은 하루 보내!","Thanks. You too. See you tonight!","고마워. 너도. 저녁에 봐!"]]},{"t":"아침 식사 준비","e":"Making Breakfast","p":[["What would you like for breakfast?","아침으로 뭐 먹고 싶어?","Maybe eggs and toast.","계란이랑 토스트 정도면 좋겠어."],["How do you want your eggs?","계란은 어떻게 해 줄까?","Scrambled, please.","스크램블로 해 줘."],["Can you set the table?","식탁 좀 차려 줄래?","Sure. I'll get the plates and forks.","물론이지. 접시랑 포크 가져올게."],["Is the toast ready yet?","토스트 다 됐어?","Almost. It needs one more minute.","거의. 1분만 더 있으면 돼."],["Breakfast is ready!","아침 다 됐어!","Great. I'm starving.","좋아. 배고파 죽겠어."]]},{"t":"식사 시작과 권하기","e":"Starting a Meal","p":[["Dinner is served. Please sit down.","저녁 차렸어요. 앉으세요.","It smells delicious!","냄새 정말 좋다!"],["Help yourself to some more rice.","밥 더 드세요.","Thank you. I'd love some more.","고마워요. 더 먹고 싶어요."],["Would you like some soup?","국 좀 드릴까요?","Yes, but just a small bowl, please.","네, 하지만 작은 그릇으로 조금만 주세요."],["Is the soup too salty?","국이 너무 짜요?","No, it's just right.","아니요, 딱 맞아요."],["Enjoy your meal!","맛있게 드세요!","Thank you. You made all this?","고마워요. 이걸 다 만들었어요?"]]},{"t":"식사 에티켓","e":"Table Manners","p":[["Please don't talk with your mouth full.","입에 음식 넣고 말하지 마세요.","Sorry. I'll finish chewing first.","미안해요. 먼저 씹고 말할게요."],["Could you pass me the salt, please?","소금 좀 건네주실래요?","Here you go.","여기 있어요."],["Please keep your elbows off the table.","팔꿈치는 식탁에서 내려 주세요.","Okay. Is this better?","네. 이러면 괜찮아요?"],["Try not to make noise when you eat soup.","국 먹을 때 소리 내지 않도록 해 봐요.","I'll try to be more careful.","좀 더 조심해 볼게요."],["Wait until everyone is seated to start.","모두 앉을 때까지 기다렸다가 시작해요.","Got it. Let's wait for Dad.","알겠어요. 아빠를 기다려요."]]},{"t":"식사 후 정리","e":"After the Meal","p":[["That was a wonderful dinner.","정말 훌륭한 저녁이었어요.","I'm glad you liked it.","좋아해 줘서 기쁘네요."],["Are you finished eating?","다 먹었니?","Yes, I'm full. Thank you for the meal.","네, 배불러요. 잘 먹었습니다."],["Please put your dishes in the sink.","그릇은 싱크대에 넣어 주세요.","Sure. I'll do it right now.","네. 지금 바로 할게요."],["Should I wipe the table?","식탁 닦을까요?","Yes, the cloth is by the sink.","응, 행주는 싱크대 옆에 있어."],["Is there any food left?","남은 음식 있어요?","Yes. Let's put it in the fridge.","네. 냉장고에 넣어 둬요."]]},{"t":"설거지","e":"Washing Dishes","p":[["Who is doing the dishes tonight?","오늘 밤 설거지는 누가 해?","It's my turn. You cooked.","내 차례야. 네가 요리했잖아."],["Can you dry while I wash?","내가 씻을 테니까 닦아 줄래?","Okay. Where does this bowl go?","좋아. 이 그릇은 어디에 둬?"],["Be careful, that glass is fragile.","조심해, 그 유리잔은 깨지기 쉬워.","Don't worry. I've got it.","걱정 마. 잘 잡고 있어."],["This pan needs to soak for a while.","이 팬은 한동안 불려야 해.","I'll fill it with hot water.","뜨거운 물을 받아 놓을게."],["Did you turn on the dishwasher?","식기세척기 켰어?","Yes, it will be done in an hour.","응, 한 시간 뒤에 끝나."]]},{"t":"청소하기","e":"Cleaning the House","p":[["The living room is a mess.","거실이 엉망이야.","Let's clean it up together.","같이 치우자."],["Can you vacuum the floor?","청소기 좀 돌려 줄래?","Sure. Where's the vacuum cleaner?","물론이지. 청소기 어디 있어?"],["I'll dust the shelves.","나는 선반 먼지를 털게.","Then I'll mop the kitchen floor.","그럼 나는 주방 바닥을 걸레질할게."],["Please pick up your toys.","장난감 좀 주워 주세요.","Okay, I'll put them in the box.","네, 상자에 넣을게요."],["The house looks so clean now!","집이 이제 정말 깨끗해 보여!","It feels so much better.","훨씬 기분 좋다."]]},{"t":"빨래","e":"Doing Laundry","p":[["The laundry basket is full.","빨래 바구니가 가득 찼어.","I'll start a load right now.","지금 바로 한 번 돌릴게."],["Can you separate the white clothes?","흰 옷은 따로 분리해 줄래?","Sure. Colors go in a different load.","물론이지. 색깔 옷은 따로 빨게."],["Did you add the detergent?","세제 넣었어?","Yes, and the fabric softener too.","응, 섬유유연제도 넣었어."],["Could you hang the clothes out to dry?","빨래 좀 널어 줄래?","Okay. It's sunny, so they'll dry quickly.","응. 날이 맑아서 금방 마를 거야."],["Please fold the towels.","수건 좀 개 줄래?","I'll do it after I finish this.","이것만 끝나면 할게."]]},{"t":"쓰레기와 분리수거","e":"Trash and Recycling","p":[["Can you take out the trash?","쓰레기 좀 버려 줄래?","Sure. Is it recycling day too?","물론이지. 오늘 분리수거 날이기도 해?"],["Please separate the plastic and paper.","플라스틱과 종이를 나눠 주세요.","Okay. Where do the cans go?","네. 캔은 어디에 넣어요?"],["Rinse the bottles before recycling them.","재활용하기 전에 병을 헹궈 줘.","I already did that.","이미 했어."],["The trash bag is almost full.","쓰레기봉투가 거의 찼어.","I'll put in a new one.","새 봉투로 갈아 놓을게."],["Don't forget the food waste.","음식물 쓰레기 잊지 마.","Thanks for reminding me.","알려 줘서 고마워."]]},{"t":"장보기 계획","e":"Planning Groceries","p":[["What do we need from the store?","가게에서 뭐가 필요해?","We're out of milk and eggs.","우유랑 계란이 떨어졌어."],["Let's make a shopping list.","장 볼 목록을 만들자.","Good idea. I'll write it down.","좋은 생각이야. 내가 적을게."],["Do we need any vegetables?","채소도 필요해?","Yes, some carrots and onions.","응, 당근이랑 양파 조금."],["How much is the budget this week?","이번 주 예산이 얼마야?","About one hundred dollars.","100달러 정도야."],["I'll go shopping this afternoon.","오늘 오후에 장 보러 갈게.","Thanks. Take the reusable bags.","고마워. 장바구니 가져가."]]},{"t":"감사와 사과","e":"Thanks and Sorry","p":[["Thank you for helping me today.","오늘 도와줘서 고마워.","You're welcome. Anytime.","천만에. 언제든지."],["I'm sorry I forgot the milk.","우유를 깜빡해서 미안해.","That's okay. It happens.","괜찮아. 그럴 수 있지."],["Thanks for cooking dinner.","저녁 차려 줘서 고마워.","My pleasure. I enjoyed it.","별말씀을. 즐거웠어."],["Excuse me, may I get past?","실례합니다, 지나가도 될까요?","Of course. Go ahead.","물론이죠. 지나가세요."],["I apologize for being late.","늦어서 죄송해요.","No problem. Come on in.","괜찮아요. 어서 들어와요."]]},{"t":"귀가 인사","e":"Coming Home","p":[["I'm home!","나 왔어!","Welcome back! How was your day?","어서 와! 오늘 어땠어?"],["You look tired.","피곤해 보여.","It was a long day, but I'm okay.","긴 하루였지만 괜찮아."],["Wash your hands before dinner.","저녁 먹기 전에 손 씻어.","Okay. I'll be right there.","응. 금방 갈게."],["Did the kids get home safely?","아이들은 무사히 집에 왔어?","Yes, they're doing their homework.","응, 숙제하고 있어."],["What's for dinner tonight?","오늘 저녁 뭐야?","Your favorite, beef stew.","네가 좋아하는 소고기 스튜야."]]},{"t":"저녁 식탁 대화","e":"Dinner Table Talk","p":[["How was school today?","오늘 학교는 어땠니?","It was fun. We played soccer.","재미있었어요. 축구를 했어요."],["Did anything interesting happen?","재미있는 일 있었니?","My friend brought a puppy to class.","친구가 강아지를 교실에 데려왔어요."],["Would you like to tell us about your day?","오늘 하루 얘기해 줄래?","Sure. First, I had a big test.","좋아요. 먼저, 큰 시험이 있었어요."],["That sounds wonderful!","정말 멋지게 들리네!","Yes, I'm very proud of myself.","네, 제가 정말 자랑스러워요."],["Let's talk more after dinner.","저녁 먹고 더 얘기하자.","Okay. Can I have dessert first?","좋아요. 디저트 먼저 먹어도 돼요?"]]},{"t":"잠자리 인사","e":"Bedtime","p":[["It's time to go to bed.","이제 잘 시간이야.","Just five more minutes, please.","딱 5분만 더요."],["Did you brush your teeth?","양치했니?","Yes, and I washed my face.","네, 세수도 했어요."],["Do you want me to read you a story?","이야기 읽어 줄까?","Yes, the one about the bear.","네, 곰 이야기요."],["Turn off the lights, please.","불 좀 꺼 줘.","Okay. Good night, sleep tight.","응. 잘 자, 푹 자."],["Sweet dreams. I love you.","좋은 꿈 꿔. 사랑해.","I love you too. Good night!","나도 사랑해요. 안녕히 주무세요!"]]},{"t":"주말 아침 가족","e":"Weekend Morning","p":[["It's Saturday. We can sleep in.","토요일이야. 늦잠 자도 돼.","But I'm already awake.","그런데 난 벌써 깼어."],["What should we do today?","오늘 뭐 할까?","Let's go to the park.","공원에 가자."],["Shall I make pancakes?","팬케이크 만들까?","Yes, with lots of syrup!","응, 시럽 많이!"],["Don't forget to bring a towel.","수건 챙기는 거 잊지 마.","I put it in the bag already.","이미 가방에 넣었어."],["Let's leave in thirty minutes.","30분 뒤에 출발하자.","Okay. I'll get dressed.","알겠어. 옷 입을게."]]},{"t":"함께 요리하기","e":"Cooking Together","p":[["Can you help me chop the onions?","양파 써는 것 좀 도와줄래?","Sure. How thin should I cut them?","그럼. 얼마나 얇게 썰까?"],["Is the oven preheated?","오븐 예열됐어?","Not yet. It needs five more minutes.","아직. 5분 더 필요해."],["Taste the sauce, please.","소스 간 좀 봐 줘.","It needs a little more salt.","소금이 조금 더 필요해."],["Watch out, the pan is hot!","조심해, 팬이 뜨거워!","Thanks. I'll use oven mitts.","고마워. 오븐 장갑 낄게."],["How long should it simmer?","얼마나 끓여야 해?","About twenty minutes on low heat.","약한 불에서 20분 정도."]]},{"t":"냉장고 정리","e":"Organizing the Fridge","p":[["The fridge is so full.","냉장고가 너무 꽉 찼어.","Let's throw away the old food.","오래된 음식은 버리자."],["Is this milk still good?","이 우유 아직 괜찮아?","Check the expiration date.","유통기한을 확인해 봐."],["Where should I put the leftovers?","남은 음식은 어디에 둘까?","On the second shelf, in a container.","두 번째 칸에 용기에 담아서."],["We should keep the vegetables fresh.","채소를 신선하게 보관해야 해.","Put them in the bottom drawer.","맨 아래 서랍에 넣어."],["Please close the fridge door.","냉장고 문 좀 닫아 줘.","Oops, I'm sorry.","어머, 미안해."]]},{"t":"옷 개기와 다림질","e":"Ironing and Folding","p":[["These shirts are wrinkled.","이 셔츠들 구겨졌어.","I'll iron them for you.","내가 다려 줄게."],["Is the iron hot enough?","다리미 충분히 뜨거워?","Wait for the light to turn off.","불이 꺼질 때까지 기다려."],["Where do I put these socks?","이 양말은 어디에 둬?","In the second drawer, please.","두 번째 서랍에 넣어 줘."],["Could you hang up my coat?","내 코트 좀 걸어 줄래?","Sure. It goes in the closet.","응. 옷장에 걸게."],["My shirt has a stain on it.","셔츠에 얼룩이 있어.","Let me try to get it out.","내가 지워 볼게."]]},{"t":"욕실 청소","e":"Cleaning the Bathroom","p":[["The bathroom needs cleaning.","욕실 청소가 필요해.","I'll scrub the tub.","욕조는 내가 문지를게."],["Where's the toilet cleaner?","변기 세정제 어디 있어?","Under the sink.","싱크대 아래에 있어."],["Please wipe the mirror.","거울 좀 닦아 줘.","Okay. It's covered in spots.","응. 얼룩이 잔뜩이네."],["Don't forget to hang the towels.","수건 걸어 두는 거 잊지 마.","I'll put out fresh ones.","새 수건으로 걸어 둘게."],["The drain is clogged again.","배수구가 또 막혔어.","I'll call a plumber if needed.","필요하면 배관공을 부를게."]]},{"t":"집 고장과 수리","e":"Fixing Things","p":[["The light bulb has burned out.","전구가 나갔어.","I'll replace it with a new one.","새것으로 갈아 끼울게."],["The faucet is leaking.","수도꼭지에서 물이 새.","Can you tighten it with a wrench?","렌치로 조여 줄래?"],["The Wi-Fi isn't working.","와이파이가 안 돼.","Let me restart the router.","공유기를 다시 켜 볼게."],["Do you have a screwdriver?","드라이버 있어?","Yes, it's in the toolbox.","응, 공구함에 있어."],["We should call someone to fix it.","누군가를 불러서 고치자.","I'll look for a repairman.","수리 기사를 찾아볼게."]]},{"t":"아이와 숙제","e":"Helping with Homework","p":[["Have you finished your homework?","숙제 다 했니?","Not yet. I need some help.","아직요. 도움이 필요해요."],["Let's check your answers together.","같이 답을 확인해 보자.","Okay. Is this one correct?","좋아요. 이건 맞아요?"],["Try reading the question again.","문제를 다시 읽어 봐.","Oh, now I understand.","아, 이제 이해했어요."],["Take a short break if you're tired.","피곤하면 잠깐 쉬어도 돼.","Can I have a snack?","간식 먹어도 돼요?"],["Great job! You worked hard.","잘했어! 열심히 했구나.","Thanks, Mom. Can I play now?","고마워요, 엄마. 이제 놀아도 돼요?"]]},{"t":"아이에게 예절 가르치기","e":"Teaching Manners","p":[["What do we say when someone helps us?","누가 도와주면 뭐라고 하지?","Thank you.","고맙습니다."],["Please say sorry to your sister.","동생한테 미안하다고 말해.","I'm sorry for taking your toy.","네 장난감 가져가서 미안해."],["Remember to say please.","부탁할 때는 '제발'을 붙이는 거 기억해.","Can I have some water, please?","물 좀 주시겠어요?"],["We should share with others.","다른 사람과 나눠야 해.","Do you want to play with my blocks?","내 블록으로 같이 놀래?"],["Don't interrupt when others are talking.","다른 사람이 말할 때 끼어들지 마.","Okay. I'll wait for my turn.","알겠어요. 내 차례를 기다릴게요."]]},{"t":"아이 식사 지도","e":"Teaching Kids to Eat Well","p":[["Please try a bite of the broccoli.","브로콜리 한 입만 먹어 봐.","It doesn't look tasty.","맛없어 보여요."],["You need to eat your vegetables.","채소를 먹어야 해.","Can I eat them after the meat?","고기 먹고 먹어도 돼요?"],["Use your spoon, not your hands.","손 말고 숟가락을 써.","It's hard to use.","쓰기 어려워요."],["Don't play with your food.","음식 가지고 장난치지 마.","Sorry. I'll eat properly.","죄송해요. 제대로 먹을게요."],["You can leave the table when you're done.","다 먹으면 자리에서 일어나도 돼.","May I be excused, please?","일어나도 될까요?"]]},{"t":"부모님과 통화","e":"Calling Parents","p":[["Hello, Mom! How are you?","엄마, 안녕하세요! 잘 지내세요?","I'm fine, dear. How are the kids?","난 잘 지낸단다. 아이들은 어떠니?"],["Have you eaten lunch yet?","점심 드셨어요?","Yes, I had noodles.","그래, 국수 먹었어."],["Please take care of your health.","건강 잘 챙기세요.","Don't worry about me.","내 걱정은 하지 마."],["We'll visit you this weekend.","이번 주말에 찾아뵐게요.","That would be wonderful!","그럼 정말 좋지!"],["I miss you a lot.","많이 보고 싶어요.","I miss you too. Call me again soon.","나도 보고 싶구나. 곧 또 전화하렴."]]},{"t":"손님 맞이","e":"Welcoming Guests","p":[["Welcome! Please come in.","어서 오세요! 들어오세요.","Thank you for inviting us.","초대해 주셔서 감사합니다."],["Let me take your coat.","코트 받아 드릴게요.","Thank you. That's very kind.","고맙습니다. 친절하시네요."],["Please make yourself at home.","편하게 계세요.","What a lovely house you have!","집이 정말 멋지네요!"],["Here is a small gift for you.","작은 선물을 드릴게요.","Oh, you shouldn't have!","어머, 이러지 않으셔도 되는데!"],["Please have a seat.","앉으세요.","Thank you. This sofa is comfortable.","감사합니다. 이 소파 편안하네요."]]},{"t":"손님 식사 대접","e":"Hosting a Dinner","p":[["Would you like something to drink?","마실 것 좀 드릴까요?","Water would be fine, thanks.","물이면 좋아요, 감사합니다."],["Please try some of this dish.","이 요리 좀 드셔 보세요.","It's delicious. What's in it?","맛있네요. 뭐가 들어갔어요?"],["Would you like a second helping?","더 드시겠어요?","Yes, just a little, please.","네, 조금만 더 주세요."],["I hope you saved room for dessert.","디저트 먹을 자리 남겨 두셨기를 바라요.","Of course! It looks amazing.","물론이죠! 정말 맛있어 보여요."],["Is there anything you can't eat?","못 드시는 음식 있으세요?","I'm allergic to peanuts.","저는 땅콩 알레르기가 있어요."]]},{"t":"손님 배웅","e":"Seeing Guests Off","p":[["Thank you for coming tonight.","오늘 와 주셔서 감사해요.","We had a wonderful time.","정말 즐거운 시간이었어요."],["Please come again soon.","곧 또 오세요.","We will. You should visit us too.","그럴게요. 당신도 저희 집에 오세요."],["Drive safely on your way home.","집에 안전하게 운전해서 가세요.","Thanks. We'll text you when we arrive.","고마워요. 도착하면 문자할게요."],["It's getting late.","시간이 늦어졌네요.","Yes, we should be going.","네, 이제 가 봐야겠어요."],["Let me walk you to the door.","문까지 배웅해 드릴게요.","Thank you. Good night!","감사합니다. 안녕히 주무세요!"]]},{"t":"이웃과 층간소음","e":"Neighbors and Noise","p":[["Hello, I live upstairs.","안녕하세요, 위층에 살아요.","Oh, nice to meet you.","아, 만나서 반가워요."],["I'm sorry if we were noisy last night.","어젯밤에 시끄러웠다면 죄송해요.","No problem, but it was a bit loud.","괜찮지만 조금 시끄럽긴 했어요."],["We'll try to keep it down.","조용히 하도록 노력할게요.","Thank you. I appreciate it.","고마워요. 감사합니다."],["Please wear slippers inside.","실내에서는 슬리퍼를 신어 주세요.","Okay. I'll tell the kids.","네. 아이들에게 말해 둘게요."],["Would you like some rice cakes?","떡 좀 드시겠어요?","That's very thoughtful of you.","정말 배려 깊으시네요."]]},{"t":"반려동물","e":"Pets at Home","p":[["Did you feed the dog?","강아지 밥 줬어?","Yes, and I gave him water.","응, 물도 줬어."],["It's time to take him for a walk.","산책시킬 시간이야.","I'll get the leash.","목줄 가져올게."],["Don't let him on the sofa.","소파에 못 올라가게 해.","He's just trying to cuddle.","그냥 안기고 싶어서 그래."],["The cat scratched the curtain.","고양이가 커튼을 긁었어.","I'll buy a scratching post.","스크래처를 사 줘야겠다."],["We need to see the vet next week.","다음 주에 수의사한테 가야 해.","I'll make an appointment.","내가 예약할게."]]},{"t":"생활비와 공과금","e":"Household Bills","p":[["The electricity bill came today.","오늘 전기요금 고지서가 왔어.","How much is it this month?","이번 달은 얼마야?"],["It's higher than usual.","평소보다 많이 나왔어.","We should turn off lights more often.","불을 더 자주 꺼야겠다."],["Did you pay the rent?","월세 냈어?","Yes, I transferred it this morning.","응, 오늘 아침에 이체했어."],["Let's check our monthly budget.","이번 달 예산을 확인해 보자.","We spent too much on eating out.","외식에 너무 많이 썼어."],["We need to save more money.","돈을 더 모아야 해.","Let's cook at home more often.","집에서 더 자주 요리하자."]]},{"t":"날씨 이야기","e":"Talking About Weather","p":[["What's the weather like today?","오늘 날씨 어때?","It's sunny, but a bit windy.","맑지만 바람이 좀 불어."],["Do I need an umbrella?","우산이 필요할까?","Yes, it might rain this afternoon.","응, 오후에 비가 올 수도 있어."],["It's really hot outside.","밖이 정말 더워.","Let's turn on the air conditioner.","에어컨 켜자."],["It's freezing this morning.","오늘 아침 엄청 추워.","Wear a scarf and gloves.","목도리랑 장갑 끼고 가."],["The forecast says it will snow.","일기예보에 눈이 온대.","Great! The kids will love it.","좋아! 아이들이 좋아하겠다."]]},{"t":"몸이 아플 때","e":"Feeling Sick","p":[["You don't look well. What's wrong?","안색이 안 좋아. 어디 아파?","I have a headache and a sore throat.","머리가 아프고 목도 아파."],["Do you have a fever?","열 있어?","Let me check with the thermometer.","체온계로 재 볼게."],["You should rest today.","오늘은 쉬어야겠다.","Yes, I'll stay in bed.","응, 침대에 누워 있을게."],["Drink plenty of warm water.","따뜻한 물 많이 마셔.","Thanks for taking care of me.","돌봐 줘서 고마워."],["I hope you feel better soon.","빨리 낫기를 바랄게.","Thank you. I'm sure I will.","고마워. 곧 나을 거야."]]},{"t":"병원과 약","e":"Doctor and Medicine","p":[["I think we should see a doctor.","병원에 가 보는 게 좋겠어.","Okay. I'll make an appointment.","알겠어. 예약할게."],["What did the doctor say?","의사 선생님이 뭐라셔?","It's just a cold. I need rest.","그냥 감기래. 쉬어야 한대."],["Take this medicine after meals.","이 약은 식후에 먹어.","How many times a day?","하루에 몇 번이야?"],["Three times a day for five days.","하루 세 번, 5일 동안.","I'll set an alarm so I don't forget.","잊지 않게 알람을 맞출게."],["Be sure to finish all the medicine.","약은 끝까지 다 먹어야 해.","I will. Thanks for reminding me.","그럴게. 챙겨 줘서 고마워."]]},{"t":"건강한 식단","e":"Healthy Eating","p":[["Let's eat healthier this month.","이번 달엔 더 건강하게 먹자.","Good idea. Less sugar, more vegetables.","좋은 생각이야. 설탕은 줄이고 채소는 늘리자."],["Do you want a salad with dinner?","저녁에 샐러드 먹을래?","Yes, with olive oil dressing.","응, 올리브 오일 드레싱으로."],["You shouldn't skip breakfast.","아침을 거르면 안 돼.","I know, but I wake up late.","알아, 그런데 늦게 일어나서."],["Try drinking more water.","물을 더 많이 마셔 봐.","I'll carry a bottle with me.","물병을 들고 다닐게."],["Fruit is a good snack.","과일은 좋은 간식이야.","I'll buy apples and bananas.","사과랑 바나나를 사 올게."]]},{"t":"함께 운동하기","e":"Exercising Together","p":[["Do you want to go for a jog?","조깅하러 갈래?","Sure. Let me put on my sneakers.","좋아. 운동화 신고 올게."],["How far should we run?","얼마나 달릴까?","Let's try three kilometers.","3킬로미터 뛰어 보자."],["I'm out of breath.","숨이 차.","Take a break and drink some water.","잠깐 쉬면서 물 마셔."],["Let's stretch before we start.","시작하기 전에 스트레칭하자.","Okay. Don't forget your legs.","응. 다리도 잊지 마."],["I feel great after exercising.","운동하고 나니 기분이 좋아.","Let's do this every morning.","매일 아침 이렇게 하자."]]},{"t":"외식 정하기","e":"Deciding Where to Eat","p":[["Where shall we eat tonight?","오늘 밤 어디서 먹을까?","How about Italian food?","이탈리아 음식 어때?"],["I don't feel like cooking today.","오늘은 요리하기 싫어.","Then let's eat out.","그럼 외식하자."],["Should I make a reservation?","예약할까?","Yes, for four people at seven.","응, 일곱 시에 네 명으로."],["Is it far from here?","여기서 멀어?","No, it's a ten-minute walk.","아니, 걸어서 10분이야."],["Can we go somewhere cheaper?","좀 더 저렴한 곳으로 갈 수 있을까?","Sure. There's a nice noodle place.","그럼. 괜찮은 국수집이 있어."]]},{"t":"식당 에티켓","e":"Restaurant Manners","p":[["Excuse me, could we see the menu?","실례합니다, 메뉴판 볼 수 있을까요?","Of course. Here you are.","물론이죠. 여기 있습니다."],["Are you ready to order?","주문하시겠어요?","Yes, I'll have the steak, medium.","네, 스테이크 미디엄으로 주세요."],["Please keep your voice down.","목소리를 조금 낮춰 줘.","Sorry, I got excited.","미안, 신나서 그랬어."],["Could we have the bill, please?","계산서 부탁드립니다.","I'll take care of it this time.","이번엔 내가 낼게."],["Should we leave a tip?","팁을 남겨야 할까?","Yes, about fifteen percent.","응, 15퍼센트 정도."]]},{"t":"배달 주문","e":"Ordering Delivery","p":[["Let's order pizza tonight.","오늘 밤엔 피자 시키자.","What toppings do you want?","토핑은 뭘로 할까?"],["Can you check the delivery time?","배달 시간 확인해 줄래?","It says about forty minutes.","40분쯤 걸린대."],["Someone is at the door.","누가 문 앞에 왔어.","That must be the food.","음식이 왔나 보다."],["Please pay the delivery person.","배달원에게 계산해 줘.","I'll use my card.","카드로 낼게."],["This is not what I ordered.","이건 내가 주문한 게 아니야.","Let's call the restaurant.","가게에 전화해 보자."]]},{"t":"마트에서","e":"At the Supermarket","p":[["Where can I find the rice?","쌀은 어디에 있죠?","It's in aisle five, on the left.","5번 통로 왼쪽에 있어요."],["Is this on sale?","이거 할인해요?","Yes, it's buy one, get one free.","네, 하나 사면 하나 더 드려요."],["Let's get a bigger cart.","더 큰 카트를 가져오자.","Okay. We have a lot to buy.","좋아. 살 게 많잖아."],["Do you have a membership card?","멤버십 카드 있으세요?","Yes, here you go.","네, 여기 있어요."],["Would you like a bag?","봉투 필요하세요?","No, thanks. I brought my own.","아니요, 괜찮아요. 가져왔어요."]]},{"t":"옷 쇼핑 조언","e":"Shopping for Clothes","p":[["Do you like this shirt?","이 셔츠 마음에 들어?","It looks nice. Try it on.","괜찮아 보여. 입어 봐."],["Does it fit well?","잘 맞아?","It's a little too tight.","조금 꽉 껴."],["Do you have a bigger size?","더 큰 사이즈 있나요?","Let me check in the back.","안쪽에서 찾아볼게요."],["That color suits you.","그 색이 너한테 잘 어울려.","Really? I'll take it.","정말? 그걸로 할게."],["Can I get a refund if it doesn't fit?","안 맞으면 환불받을 수 있나요?","Yes, within seven days.","네, 7일 이내에 가능합니다."]]},{"t":"가족 운전과 이동","e":"Family Car Trips","p":[["Please buckle your seat belt.","안전벨트 매세요.","Okay. Are we leaving now?","네. 지금 출발해요?"],["Do we have enough gas?","기름 충분해?","We should fill up on the way.","가는 길에 넣어야 해."],["Which way should I turn?","어느 쪽으로 돌아야 해?","Turn left at the next light.","다음 신호에서 좌회전해."],["Are we there yet?","다 왔어요?","Almost. Ten more minutes.","거의 다 왔어. 10분만 더."],["Where should I park?","어디에 주차할까?","There's a spot over there.","저쪽에 자리가 있어."]]},{"t":"여행 짐 싸기","e":"Packing for a Trip","p":[["Have you packed your bag?","짐 다 쌌어?","Almost. I need my charger.","거의. 충전기가 필요해."],["Don't forget your passport.","여권 잊지 마.","It's in my backpack.","배낭에 있어."],["How many clothes should I bring?","옷은 몇 벌 가져가야 할까?","Three outfits should be enough.","세 벌이면 충분해."],["Do we need a travel pillow?","여행용 목베개 필요할까?","Yes, for the long flight.","응, 긴 비행이니까."],["Let's check the weather there.","거기 날씨를 확인해 보자.","It will be rainy all week.","일주일 내내 비가 온대."]]},{"t":"공항과 호텔","e":"Airport and Hotel","p":[["Where is the check-in counter?","체크인 카운터가 어디죠?","It's on the second floor.","2층에 있어요."],["Do you have anything to declare?","신고할 물건이 있으세요?","No, nothing at all.","아니요, 전혀 없어요."],["I have a reservation under Kim.","김 이름으로 예약했어요.","May I see your passport?","여권 좀 보여 주시겠어요?"],["What time is breakfast served?","조식은 몇 시에 나와요?","From seven to ten.","7시부터 10시까지입니다."],["Could you wake us up at six?","6시에 깨워 주시겠어요?","Certainly. I'll arrange a morning call.","물론입니다. 모닝콜을 설정해 드릴게요."]]},{"t":"휴일 계획","e":"Holiday Plans","p":[["What are we doing this weekend?","이번 주말에 뭐 해?","Let's visit Grandma's house.","할머니 댁에 가자."],["Should we bring something?","뭐 좀 가져갈까?","Let's bring some fruit.","과일을 좀 가져가자."],["Do you want to see a movie?","영화 볼래?","Sure. What's playing?","좋아. 뭐 상영해?"],["I'd like to stay home and relax.","집에서 쉬고 싶어.","That sounds good to me too.","나도 그게 좋아."],["Let's have a picnic tomorrow.","내일 소풍 가자.","I'll make the sandwiches.","내가 샌드위치를 만들게."]]},{"t":"생일 파티","e":"Birthday Party","p":[["Happy birthday! Make a wish!","생일 축하해! 소원을 빌어!","Thank you. I wished for a puppy.","고마워요. 강아지를 소원으로 빌었어요."],["Shall I cut the cake?","케이크 자를까?","Yes, I want a big piece.","응, 큰 조각으로 줘."],["Did you invite your friends?","친구들은 초대했니?","Yes, six friends are coming.","네, 여섯 명이 와요."],["Here is your present.","여기 네 선물이야.","Wow! Can I open it now?","와! 지금 열어 봐도 돼요?"],["Let's take a family photo.","가족사진 찍자.","Everyone, say cheese!","모두 치즈 하세요!"]]},{"t":"칭찬하기","e":"Giving Compliments","p":[["You cooked this really well.","이거 정말 잘 요리했네요.","Thank you. I'm glad you like it.","고마워요. 마음에 들어서 기뻐요."],["Your room looks very tidy.","네 방이 아주 깔끔해 보여.","I cleaned it by myself.","내가 혼자 치웠어."],["That dress looks great on you.","그 원피스 너한테 정말 잘 어울려.","Thanks! I bought it last week.","고마워! 지난주에 샀어."],["You are a great helper.","넌 정말 좋은 도우미야.","It makes me happy to help.","도우니까 기분이 좋아요."],["I'm proud of you.","네가 자랑스러워.","That means a lot to me.","그 말이 나한테 큰 힘이 돼."]]},{"t":"공손하게 부탁하기","e":"Asking Politely","p":[["Could you do me a favor?","부탁 하나 들어줄래?","Of course. What is it?","물론이지. 뭔데?"],["Would you mind closing the window?","창문 좀 닫아 주실래요?","Not at all. It's a bit cold.","그럼요. 좀 춥네요."],["May I borrow your umbrella?","우산 좀 빌려도 될까요?","Sure. Just return it tomorrow.","그럼요. 내일 돌려주세요."],["Could you speak a little slower?","조금만 천천히 말해 주실래요?","Sure. Is this better?","물론이죠. 이러면 괜찮아요?"],["Would you help me carry this?","이거 드는 것 좀 도와주실래요?","Certainly. Where should I put it?","물론이죠. 어디에 둘까요?"]]},{"t":"정중하게 거절하기","e":"Saying No Politely","p":[["Would you like some more cake?","케이크 더 드실래요?","No, thank you. I'm full.","아니요, 괜찮아요. 배불러요."],["Can you come to dinner on Friday?","금요일 저녁 식사에 올 수 있어?","I'm sorry, I already have plans.","미안해, 이미 약속이 있어."],["Do you want to watch TV now?","지금 TV 볼래?","Not now. I'm busy studying.","지금은 아니야. 공부하느라 바빠."],["Could you lend me some money?","돈 좀 빌려줄 수 있어?","I'm afraid I can't this time.","이번엔 어려울 것 같아."],["Would you like to try this?","이거 먹어 볼래요?","I'll pass, but thank you for offering.","사양할게요, 권해 줘서 고마워요."]]},{"t":"의견이 다를 때","e":"Disagreeing Kindly","p":[["I think we should paint the room blue.","방을 파란색으로 칠하면 좋겠어.","I see your point, but I prefer white.","네 생각은 알겠는데, 난 흰색이 좋아."],["Let's try it my way this time.","이번엔 내 방식대로 해 보자.","Okay, but let's talk about it first.","좋아, 하지만 먼저 얘기해 보자."],["I don't agree with that.","그 의견엔 동의하지 않아.","Can you tell me why?","이유를 말해 줄래?"],["Maybe we can find a middle ground.","서로 양보할 방법을 찾아보자.","That's a fair idea.","공평한 생각이야."],["Let's decide together.","함께 결정하자.","Agreed. Let's vote.","동의해. 투표하자."]]},{"t":"화해하기","e":"Making Up","p":[["I'm sorry for what I said earlier.","아까 한 말 미안해.","I'm sorry too. I was upset.","나도 미안해. 화가 났었어."],["Can we talk about it?","우리 얘기 좀 할 수 있을까?","Yes, I'd like that.","응, 그러고 싶어."],["I didn't mean to hurt you.","상처 주려던 건 아니었어.","I know. I forgive you.","알아. 용서할게."],["Let's start over.","다시 시작하자.","That sounds good to me.","좋아."],["Thank you for understanding.","이해해 줘서 고마워.","We're family. We help each other.","우린 가족이잖아. 서로 돕는 거지."]]},{"t":"위로하기","e":"Comforting Someone","p":[["You seem down. What happened?","기운이 없어 보이네. 무슨 일이야?","I failed my test today.","오늘 시험을 망쳤어."],["I'm sorry to hear that.","그 말을 들으니 안타깝다.","I studied hard, but it wasn't enough.","열심히 공부했는데 부족했나 봐."],["Everyone makes mistakes sometimes.","누구나 가끔 실수를 해.","I just feel really sad.","그냥 너무 속상해."],["I'm here if you want to talk.","얘기하고 싶으면 내가 여기 있어.","Thanks. That helps a lot.","고마워. 큰 도움이 돼."],["You'll do better next time.","다음엔 더 잘할 거야.","I'll try my best.","최선을 다할게."]]},{"t":"격려하기","e":"Encouraging Others","p":[["Don't give up. You can do it.","포기하지 마. 넌 할 수 있어.","Thanks. I'll try again.","고마워. 다시 해 볼게."],["You're getting better every day.","넌 날마다 나아지고 있어.","Do you really think so?","정말 그렇게 생각해?"],["Take your time. There's no rush.","천천히 해. 서두를 필요 없어.","Okay. I'll go step by step.","응. 한 걸음씩 할게."],["Good luck with your interview!","면접 잘 봐!","Thanks. I'm a little nervous.","고마워. 조금 떨려."],["I believe in you.","난 널 믿어.","That gives me confidence.","그러니까 자신감이 생겨."]]},{"t":"약속과 시간 지키기","e":"Keeping Promises and Time","p":[["Please be home by nine.","아홉 시까지 집에 와.","I promise. I'll be on time.","약속할게. 제시간에 올게."],["You're late again.","또 늦었네.","I'm sorry. The traffic was bad.","미안해. 차가 많이 막혔어."],["Let me know if you'll be late.","늦으면 알려 줘.","I'll text you right away.","바로 문자할게."],["Shall we meet at six?","여섯 시에 만날까?","Yes, I'll be there on time.","응, 제시간에 갈게."],["I keep my promises.","나는 약속을 지켜.","I know, and I trust you.","알아, 그래서 널 믿어."]]},{"t":"공공장소 매너","e":"Manners in Public","p":[["Please stand in line.","줄을 서 주세요.","Oh, I didn't see the line. Sorry.","아, 줄을 못 봤어요. 죄송해요."],["Please give your seat to the elderly.","어르신께 자리를 양보해 줘.","Of course. Please sit here.","그럼요. 여기 앉으세요."],["Keep your voice low on the bus.","버스에서는 목소리를 낮춰.","Okay. I'll whisper.","응. 속삭일게."],["Don't litter in the park.","공원에 쓰레기 버리지 마.","I'll throw it in the trash can.","쓰레기통에 버릴게."],["Hold the door for the next person.","다음 사람을 위해 문을 잡아 줘.","Sure. After you.","그럼요. 먼저 들어가세요."]]},{"t":"전화 매너","e":"Phone Manners","p":[["Hello, this is Kim speaking.","여보세요, 김입니다.","Hi, may I speak to Mr. Lee?","안녕하세요, 이 선생님 계신가요?"],["He's not in right now.","지금 안 계세요.","Could you take a message?","메시지를 남겨도 될까요?"],["Please call back later.","나중에 다시 전화해 주세요.","Okay. Thank you for your time.","알겠습니다. 시간 내 주셔서 감사해요."],["I'm sorry, you have the wrong number.","죄송하지만 잘못 거셨어요.","Oh, I apologize for the trouble.","아, 불편 드려 죄송합니다."],["Please turn off your phone at dinner.","식사할 땐 휴대폰을 꺼 줘.","You're right. I'll put it away.","맞아. 치울게."]]},{"t":"식탁에서의 대화 매너","e":"Conversation Manners at Table","p":[["Let's talk about something pleasant.","즐거운 이야기를 해요.","Good idea. How was your trip?","좋아요. 여행은 어땠어요?"],["Please let him finish speaking.","그가 말을 끝내게 해 주세요.","Sorry, I got too excited.","죄송해요, 너무 흥분했어요."],["Don't look at your phone while eating.","밥 먹을 때 휴대폰 보지 마.","Okay. I'll put it down.","알겠어. 내려놓을게."],["Thank you for asking me.","물어봐 줘서 고마워요.","I'm interested in your opinion.","당신 의견이 궁금해요."],["Let's not argue at the table.","식탁에서는 다투지 말자.","You're right. Let's enjoy dinner.","맞아. 저녁을 즐기자."]]},{"t":"어른 공경","e":"Respecting Elders","p":[["Grandpa, please sit here.","할아버지, 여기 앉으세요.","Thank you, dear. You're so kind.","고맙구나. 참 착하다."],["Let me pour you some tea.","제가 차를 따라 드릴게요.","Thank you. Please have some too.","고맙다. 너도 마시렴."],["Please start eating first, Grandma.","할머니, 먼저 드세요.","Thank you. You can eat too.","고맙다. 너도 먹으렴."],["May I help you carry that bag?","그 가방 들어 드릴까요?","That's very helpful. Thank you.","고맙구나. 큰 도움이 돼."],["Take care and be well.","건강하게 지내세요.","You too. Visit us again soon.","너도. 곧 또 오렴."]]},{"t":"집안 규칙","e":"House Rules","p":[["Please take off your shoes at the door.","현관에서 신발을 벗어 주세요.","Sorry, I forgot.","미안해요, 깜빡했어요."],["No snacks in the bedroom.","침실에서는 간식 먹지 마.","Okay. I'll eat in the kitchen.","알겠어. 부엌에서 먹을게."],["Please turn off the TV by ten.","열 시까지는 TV를 꺼 줘.","Can I watch one more show?","프로그램 하나만 더 봐도 돼요?"],["Always wash your hands first.","항상 손부터 씻어.","I'll do it right now.","지금 바로 할게요."],["Put things back where they belong.","물건은 제자리에 둬.","I'll try to remember that.","기억하도록 노력할게요."]]},{"t":"사생활 존중","e":"Respecting Privacy","p":[["Please knock before you come in.","들어오기 전에 노크해 줘.","Oh, sorry. I'll knock next time.","아, 미안해. 다음엔 노크할게."],["May I borrow your phone for a minute?","전화기 잠깐 빌려도 될까?","Sure, but please don't read my messages.","그래, 하지만 메시지는 읽지 마."],["Let's give him some time alone.","그에게 혼자 있을 시간을 주자.","You're right. He needs space.","맞아. 혼자 있을 공간이 필요해."],["That's a private matter.","그건 사적인 문제야.","I understand. I'll ask no more.","이해해. 더 묻지 않을게."],["Thanks for respecting my space.","내 공간을 존중해 줘서 고마워.","Of course. We all need privacy.","물론이지. 우리 모두 사생활이 필요해."]]},{"t":"감사 표현","e":"Showing Gratitude","p":[["Thank you for everything you do.","네가 해 주는 모든 일에 고마워.","It's nothing. I love doing it.","별것 아니야. 난 그게 좋아."],["I really appreciate your help.","도와줘서 정말 고맙게 생각해.","Don't mention it.","별말씀을."],["Thanks for the lovely gift.","멋진 선물 고마워.","I'm glad you like it.","마음에 들어서 다행이야."],["We are grateful for your kindness.","당신의 친절에 감사드려요.","It was my pleasure.","제가 기뻤어요."],["Let's say a prayer of thanks.","감사 기도를 하자.","Thank you for this food and family.","이 음식과 가족에 감사합니다."]]},{"t":"계절 옷 정리","e":"Seasonal Clothes","p":[["It's time to put away the winter clothes.","겨울옷을 정리할 때가 됐어.","Where should we keep them?","어디에 보관하지?"],["Let's wash them first.","먼저 빨자.","Then we can pack them in boxes.","그다음에 상자에 담으면 돼."],["Do these still fit you?","이거 아직 맞아?","No, they're too small now.","아니, 이제 작아."],["We can donate the old ones.","입지 않는 건 기부하면 돼.","That's a nice idea.","좋은 생각이야."],["Please get the summer clothes out.","여름옷 좀 꺼내 줘.","They're in the top closet.","맨 위 옷장에 있어."]]},{"t":"대청소","e":"Spring Cleaning","p":[["Let's do a big cleaning this weekend.","이번 주말에 대청소하자.","Okay. Where should we start?","좋아. 어디서부터 시작할까?"],["Let's start with the windows.","창문부터 시작하자.","I'll get the glass cleaner.","유리 세정제 가져올게."],["Please move the sofa for me.","소파 좀 옮겨 줘.","It's heavy. Let's lift it together.","무거워. 같이 들자."],["There's so much dust behind it.","뒤에 먼지가 정말 많아.","We should have cleaned it earlier.","진작 청소했어야 했어."],["I'll organize the bookshelf.","책장은 내가 정리할게.","Great. I'll do the closet.","좋아. 나는 옷장을 할게."]]},{"t":"가구 배치","e":"Arranging Furniture","p":[["Let's move the table closer to the window.","탁자를 창가 쪽으로 옮기자.","Good idea. We'll get more light.","좋은 생각이야. 빛이 더 들어오겠다."],["Is this where you want the bed?","침대를 여기에 놓으면 돼?","A little to the left, please.","왼쪽으로 조금만 옮겨 줘."],["That looks much better.","훨씬 보기 좋네.","Yes, the room feels bigger now.","응, 방이 더 넓어 보여."],["Let's hang a picture on this wall.","이 벽에 그림을 걸자.","I'll bring the hammer and nails.","망치와 못을 가져올게."],["Careful! Don't scratch the floor.","조심해! 바닥 긁지 마.","I'll put a blanket underneath.","밑에 담요를 깔게."]]},{"t":"화분과 정원","e":"Plants and Garden","p":[["The plants need some water.","식물에 물을 줘야 해.","I'll water them in the morning.","아침에 물 줄게."],["This one needs more sunlight.","이건 햇빛이 더 필요해.","Let's move it to the balcony.","베란다로 옮기자."],["Look! The flowers are blooming.","봐! 꽃이 피고 있어.","They're so beautiful!","정말 예쁘다!"],["Should we plant tomatoes?","토마토를 심을까?","Yes, they're easy to grow.","응, 키우기 쉬워."],["Don't forget to pull out the weeds.","잡초 뽑는 거 잊지 마.","I'll do it after lunch.","점심 먹고 할게."]]},{"t":"빵과 쿠키 굽기","e":"Baking Together","p":[["Let's bake cookies today.","오늘 쿠키 굽자.","Yes! What do we need?","좋아! 뭐가 필요해?"],["First, mix the butter and sugar.","먼저 버터와 설탕을 섞어.","Like this? It's so sticky.","이렇게? 너무 끈적해."],["Now add the flour slowly.","이제 밀가루를 천천히 넣어.","How much should I put in?","얼마나 넣어야 해?"],["Put them in the oven for ten minutes.","오븐에 10분 넣어.","They smell amazing already.","벌써 냄새가 끝내준다."],["Let them cool before you eat.","먹기 전에 식혀.","But I want one now!","그래도 지금 먹고 싶어!"]]},{"t":"간식과 디저트","e":"Snacks and Desserts","p":[["Do you want a snack?","간식 먹을래?","Yes, do we have any fruit?","응, 과일 있어?"],["There are some apples in the basket.","바구니에 사과가 있어.","I'll cut them for us.","내가 잘라 줄게."],["Would you like tea or juice?","차 마실래, 주스 마실래?","Tea, please. With honey.","차로 줘. 꿀 넣어서."],["No more sweets before dinner.","저녁 전엔 단것 그만 먹어.","Just one candy, please.","사탕 딱 하나만요."],["Dessert is for after the meal.","디저트는 식사 후에 먹는 거야.","Okay. I'll wait.","알겠어요. 기다릴게요."]]},{"t":"명절 준비","e":"Preparing for Holidays","p":[["The holiday is coming soon.","명절이 곧 다가오네.","We should plan the menu.","메뉴를 계획해야겠다."],["Let's clean the house first.","먼저 집을 청소하자.","I'll buy the ingredients tomorrow.","내일 재료를 사 올게."],["How many people are coming?","몇 명이 와?","Around twelve relatives.","친척 열두 명 정도."],["We need more chairs.","의자가 더 필요해.","We can borrow some from the neighbors.","이웃에게 빌릴 수 있어."],["Let's prepare everything today.","오늘 모든 걸 준비하자.","Then we can relax tomorrow.","그러면 내일은 쉴 수 있어."]]},{"t":"명절 식사","e":"Holiday Feast","p":[["Everyone, please come to the table.","모두 식탁으로 오세요.","Wow, there is so much food!","와, 음식이 정말 많네요!"],["Please eat as much as you like.","많이 드세요.","Thank you. Everything looks delicious.","감사합니다. 다 맛있어 보여요."],["Who made this dish?","이거 누가 만들었어요?","My grandmother's recipe.","할머니 레시피예요."],["Let's give a toast to the family.","가족을 위해 건배해요.","Cheers! To good health!","건배! 건강을 위하여!"],["Happy holidays, everyone!","모두 행복한 명절 되세요!","Same to you. Thank you!","당신도요. 고마워요!"]]},{"t":"선물 주고받기","e":"Giving Gifts","p":[["I bought you a small present.","작은 선물을 샀어.","Thank you! What is it?","고마워! 뭐야?"],["Please open it later.","나중에 열어 봐.","I can't wait. Let me open it.","못 참겠어. 지금 열어 볼게."],["It's exactly what I wanted!","내가 딱 원하던 거야!","I'm so glad you like it.","마음에 들어서 정말 기뻐."],["It's just a small token of thanks.","작은 감사의 표시일 뿐이에요.","You're too kind.","너무 친절하시네요."],["I'll write a thank-you card.","감사 카드를 쓸게.","That's a lovely idea.","멋진 생각이야."]]},{"t":"가전과 인터넷","e":"Home Appliances","p":[["The washing machine is making noise.","세탁기에서 소리가 나.","Let me check if it's balanced.","균형이 맞는지 볼게."],["How do I use this remote?","이 리모컨 어떻게 써?","Press this button to turn it on.","이 버튼을 눌러서 켜."],["The microwave isn't working.","전자레인지가 안 돼.","Maybe it's unplugged.","플러그가 빠졌나 봐."],["Can you set the timer for ten minutes?","타이머를 10분으로 맞춰 줄래?","Done. I'll call you when it beeps.","했어. 소리 나면 알려 줄게."],["The vacuum battery is dead.","청소기 배터리가 다 됐어.","Let me charge it.","충전해 놓을게."]]},{"t":"에너지 절약","e":"Saving Energy","p":[["Turn off the lights when you leave.","나갈 때 불 꺼.","Oops, I forgot again.","앗, 또 깜빡했네."],["Let's unplug things we don't use.","안 쓰는 건 플러그를 뽑자.","Good idea. It saves electricity.","좋은 생각이야. 전기를 아껴."],["Don't leave the water running.","물 틀어 놓지 마.","I'm sorry. I'll turn it off.","미안해. 잠글게."],["It's cold. Let's wear warm clothes.","추워. 따뜻하게 입자.","That's better than raising the heat.","난방 올리는 것보다 낫지."],["Let's use the stairs instead.","대신 계단으로 가자.","Okay. It's good exercise.","좋아. 좋은 운동이야."]]},{"t":"출근 준비","e":"Getting Ready for Work","p":[["Are you ready to leave?","나갈 준비 됐어?","Almost. I can't find my keys.","거의. 열쇠를 못 찾겠어."],["They're on the shelf by the door.","문 옆 선반에 있어.","Found them. Thank you!","찾았어. 고마워!"],["Don't forget your lunch box.","도시락 챙기는 거 잊지 마.","Got it. It's in my bag.","응. 가방에 있어."],["Is your tie straight?","넥타이 반듯해?","Let me fix it for you.","내가 고쳐 줄게."],["I'm leaving now. Bye!","지금 나갈게. 안녕!","Take care. Come home safe.","조심해서 다녀와. 안전하게 와."]]},{"t":"아이 등교 준비","e":"Getting Kids to School","p":[["Wake up, it's time for school.","일어나, 학교 갈 시간이야.","I'm still sleepy.","아직 졸려요."],["Did you pack your school bag?","책가방 쌌니?","Yes, with my notebook and lunch.","네, 공책이랑 도시락도요."],["Eat your breakfast quickly.","아침 빨리 먹어.","It's too hot to eat.","너무 뜨거워서 못 먹겠어요."],["The school bus is coming.","스쿨버스가 오고 있어.","Wait! I forgot my hat.","잠깐만요! 모자를 깜빡했어요."],["Have a great day at school!","학교에서 좋은 하루 보내!","Bye, Mom! See you later!","엄마, 안녕! 이따 봐요!"]]},{"t":"학교 이야기","e":"Talking About School","p":[["Did you finish the school project?","학교 과제는 다 했니?","Not yet. I need some paper.","아직요. 종이가 필요해요."],["How did you do on the exam?","시험은 어땠니?","I got a good grade in math.","수학은 좋은 점수를 받았어요."],["Do you have homework tonight?","오늘 밤 숙제 있니?","Just reading for thirty minutes.","독서 30분만 하면 돼요."],["Who is your best friend?","네 제일 친한 친구가 누구니?","Tom sits next to me in class.","톰이 교실에서 내 옆에 앉아요."],["Please tell me if anyone bothers you.","누가 괴롭히면 말해 줘.","I will. Thanks, Dad.","그럴게요. 고마워요, 아빠."]]},{"t":"가족 회의","e":"Family Meeting","p":[["Let's have a family meeting tonight.","오늘 밤 가족 회의를 하자.","What do we need to discuss?","무슨 얘기를 해야 해?"],["We should share the chores fairly.","집안일을 공평하게 나누자.","I'll take out the trash.","난 쓰레기를 버릴게."],["Can everyone clean their own room?","모두 자기 방은 스스로 청소할 수 있겠니?","Yes, we promise.","네, 약속해요."],["Let's choose a place for vacation.","휴가 갈 곳을 정하자.","I vote for the beach!","난 바다에 한 표!"],["Thank you all for your ideas.","모두 의견 줘서 고마워.","This was a good meeting.","좋은 회의였어요."]]},{"t":"하루 시작하기 복습","e":"Starting the Day","p":[["Good morning, everyone! Rise and shine!","모두 좋은 아침! 일어나요!","Five more minutes, please.","5분만 더요."],["Did you make your bed?","이불 정리했니?","Yes, and I opened the window.","네, 창문도 열었어요."],["Breakfast is on the table.","아침이 식탁에 있어요.","Thank you for the meal!","잘 먹겠습니다!"],["Please wash up and get dressed.","씻고 옷 입어요.","I'll be ready in ten minutes.","10분 안에 준비할게요."],["Let's all have a great day.","모두 좋은 하루 보내요.","Same to you. See you tonight!","당신도요. 저녁에 봐요!"]]},{"t":"도시락 준비","e":"Packing Lunch","p":[["What should I put in your lunch box?","도시락에 뭘 넣어 줄까?","Rice balls and some fruit, please.","주먹밥이랑 과일 부탁해요."],["Do you want any juice?","주스도 줄까?","No, water is fine.","아니요, 물이면 돼요."],["Don't forget your chopsticks.","젓가락 잊지 마.","I put them in my bag.","가방에 넣었어요."],["Is this enough food for you?","이 정도면 충분해?","Yes, thanks. It looks tasty.","네, 고마워요. 맛있어 보여요."],["Eat slowly and enjoy your lunch.","천천히 맛있게 먹어.","I will. Bye, Mom!","그럴게요. 엄마, 안녕!"]]},{"t":"간식 시간 조언","e":"Healthy Snack Advice","p":[["You shouldn't eat too many sweets.","단것을 너무 많이 먹으면 안 돼.","I know. They make my teeth hurt.","알아요. 이가 아파져요."],["Try nuts instead of candy.","사탕 대신 견과류를 먹어 봐.","Are they good for me?","몸에 좋아요?"],["Brush your teeth after snacks.","간식 먹고 나서 양치해.","Okay. I'll do it now.","네. 지금 할게요."],["Drink water, not soda.","탄산음료 말고 물을 마셔.","But soda tastes better.","그래도 탄산이 더 맛있어요."],["A little is fine, but not every day.","조금은 괜찮지만 매일은 안 돼.","Deal. Only on weekends.","좋아요. 주말에만요."]]},{"t":"남의 집 방문 에티켓","e":"Visiting Someone's Home","p":[["Should we bring a gift?","선물을 가져갈까?","Yes, flowers or fruit would be nice.","응, 꽃이나 과일이 좋겠어."],["Please ring the bell and wait.","벨을 누르고 기다려.","Okay. Let's smile when they open.","응. 문 열면 웃자."],["Say hello politely to everyone.","모두에게 공손히 인사해.","Hello, thank you for having us.","안녕하세요, 초대해 주셔서 감사해요."],["Don't touch things without asking.","물어보지 않고 물건을 만지지 마.","I'll keep my hands to myself.","손대지 않을게요."],["Let's not stay too late.","너무 늦게까지 있지 말자.","Right. We should thank them and go.","맞아. 인사드리고 가자."]]},{"t":"이웃에게 선물","e":"Gifts for Neighbors","p":[["I baked some bread for the neighbors.","이웃들에게 줄 빵을 구웠어.","They'll love it.","좋아하실 거야."],["Let's introduce ourselves to them.","우리를 소개하러 가자.","I'm nervous, but let's go.","떨리지만 가 보자."],["Hello, we just moved in next door.","안녕하세요, 옆집에 막 이사 왔어요.","Welcome to the neighborhood!","동네에 오신 걸 환영해요!"],["Please let us know if you need anything.","필요한 게 있으면 언제든 말씀하세요.","Likewise. Don't hesitate to ask.","저도요. 주저 말고 말씀하세요."],["Thank you for the warm welcome.","따뜻하게 맞아 주셔서 감사해요.","We hope we'll be good neighbors.","좋은 이웃이 되길 바라요."]]},{"t":"비 오는 날","e":"A Rainy Day","p":[["It's pouring outside!","밖에 비가 쏟아져!","Bring the laundry in, quickly.","빨래 얼른 걷어."],["Where is my umbrella?","내 우산 어디 있지?","It's in the umbrella stand.","우산꽂이에 있어."],["My shoes are all wet.","신발이 다 젖었어.","Let's put newspaper inside to dry.","안에 신문지를 넣어서 말리자."],["Be careful, the road is slippery.","조심해, 길이 미끄러워.","I'll walk slowly.","천천히 걸을게."],["I love the sound of rain.","빗소리가 좋아.","Let's drink hot tea and listen.","따뜻한 차를 마시며 듣자."]]},{"t":"눈 오는 날","e":"A Snowy Day","p":[["Look! It's snowing outside.","봐! 밖에 눈이 와.","Can we go out and play?","나가서 놀아도 돼요?"],["Put on your hat and boots first.","먼저 모자랑 장화를 신어.","Okay. Where are my mittens?","네. 내 벙어리장갑 어디 있어요?"],["Let's build a snowman together.","같이 눈사람 만들자.","I'll find a carrot for the nose.","코로 쓸 당근을 찾아올게."],["The roads are icy. Drive carefully.","길이 얼었어. 조심해서 운전해.","I will. I'll go slowly.","그럴게. 천천히 갈게."],["Come inside and warm up.","들어와서 몸 좀 녹여.","Hot chocolate sounds perfect.","핫초코가 딱이겠다."]]},{"t":"늦잠과 지각","e":"Oversleeping","p":[["Oh no, I overslept!","이런, 늦잠 잤어!","You still have time. Hurry up.","아직 시간 있어. 서둘러."],["Why didn't the alarm ring?","알람이 왜 안 울렸지?","You probably turned it off.","아마 네가 껐을 거야."],["I'll skip breakfast today.","오늘은 아침 건너뛸게.","At least take a banana with you.","바나나라도 가져가."],["I'm going to be late for school.","학교에 지각하겠어.","I'll drive you there.","내가 태워다 줄게."],["Next time, go to bed earlier.","다음엔 더 일찍 자.","I promise I will.","꼭 그럴게요."]]},{"t":"정전과 비상","e":"Power Outage","p":[["The lights went out!","불이 나갔어!","Stay calm. I'll find a flashlight.","침착해. 손전등을 찾아볼게."],["Is it only our house?","우리 집만 그래?","No, the whole street is dark.","아니, 길 전체가 어두워."],["Don't open the fridge too often.","냉장고를 너무 자주 열지 마.","Okay. The food will stay cold.","알았어. 음식이 차갑게 유지될 거야."],["Let's light some candles carefully.","초를 조심해서 켜자.","Keep them away from the curtains.","커튼에서 멀리 둬."],["The power is back on!","전기가 다시 들어왔어!","Great. Let's reset the clocks.","좋아. 시계를 다시 맞추자."]]},{"t":"가족 사진과 추억","e":"Family Memories","p":[["Look at this old photo album.","이 오래된 앨범 좀 봐.","Is that you when you were little?","이게 어렸을 때의 당신이에요?"],["You were so cute!","넌 정말 귀여웠구나!","I remember that day. It was my birthday.","그날 기억나. 내 생일이었어."],["Where was this picture taken?","이 사진은 어디서 찍은 거야?","At the beach, during our trip.","여행 때 바닷가에서."],["We should take more family photos.","가족사진을 더 많이 찍어야 해.","Let's take one now.","지금 한 장 찍자."],["Those were such happy days.","정말 행복한 시절이었어.","And we'll make many more.","앞으로도 많이 만들 거야."]]},{"t":"TV와 취향","e":"TV and Hobbies","p":[["What do you want to watch?","뭐 보고 싶어?","Something funny, please.","웃긴 거 보고 싶어."],["Can I change the channel?","채널 돌려도 돼?","Wait. This show is almost over.","잠깐만. 이 프로 거의 끝나."],["Turn down the volume, please.","소리 좀 줄여 줘.","Sorry. Is this better?","미안해. 이러면 괜찮아?"],["What's your favorite hobby?","네가 제일 좋아하는 취미가 뭐야?","I enjoy drawing and reading.","나는 그림 그리기와 독서를 좋아해."],["Let's play a board game tonight.","오늘 밤엔 보드게임 하자.","Yes! I'll set it up.","좋아! 내가 준비할게."]]},{"t":"어르신 건강 챙기기","e":"Caring for Elders","p":[["Did you take your medicine, Dad?","아버지, 약 드셨어요?","Yes, I took it after lunch.","그래, 점심 먹고 먹었다."],["Please don't walk alone at night.","밤에 혼자 걸어 다니지 마세요.","I'll be careful.","조심할게."],["How about a short walk together?","같이 잠깐 산책할까요?","That would be nice. I need fresh air.","좋지. 바람 좀 쐬야겠다."],["Is the soup soft enough?","국이 충분히 부드러워요?","Yes, it's easy to eat.","그래, 먹기 편하다."],["Call me anytime you need help.","도움이 필요하면 언제든 전화하세요.","Thank you, you're a good son.","고맙다, 넌 좋은 아들이구나."]]},{"t":"연말과 새해","e":"Year End and New Year","p":[["The year is almost over.","올해도 거의 끝나가네.","Time really flies.","시간 참 빠르다."],["What's your New Year's resolution?","새해 결심이 뭐야?","I want to exercise more.","운동을 더 하고 싶어."],["Let's clean up the house before the new year.","새해 전에 집을 정리하자.","And start fresh.","그리고 새롭게 시작하자."],["Happy New Year!","새해 복 많이 받아요!","Happy New Year to you too!","당신도 새해 복 많이 받아요!"],["May this year bring us health and joy.","올해는 건강과 기쁨이 가득하길.","And lots of time together.","함께하는 시간도 많았으면."]]},{"t":"가족 칭찬 총정리","e":"Family Appreciation","p":[["Thanks for taking care of everything.","모든 걸 챙겨 줘서 고마워.","We're a team. We do it together.","우린 한 팀이야. 함께 하는 거지."],["I'm grateful to have you in my life.","내 인생에 네가 있어서 감사해.","I feel the same way.","나도 같은 마음이야."],["You always make me smile.","넌 항상 나를 웃게 해.","That's what family is for.","가족이 그런 거지."],["Let's always be kind to each other.","서로에게 늘 친절하자.","I promise to try every day.","매일 노력할게."],["I love our home.","난 우리 집이 좋아.","Me too. It's full of warmth.","나도. 따뜻함이 가득해."]]},{"t":"마무리 종합 대화","e":"Final Review Conversation","p":[["Good morning! How was your sleep?","좋은 아침! 잘 잤어?","Great. Thanks. Should I help with breakfast?","응. 고마워. 아침 준비 도울까?"],["Please set the table and wash your hands.","상 차리고 손 씻어 줘.","Sure. May I get the glasses too?","그럼. 컵도 가져올까?"],["Thank you for the meal. It was delicious.","잘 먹었어요. 맛있었어요.","You're welcome. Could you do the dishes?","천만에요. 설거지 좀 해 줄래요?"],["I'm sorry, I'll do it after I take the trash out.","미안해요, 쓰레기 버리고 와서 할게요.","No problem. Thank you for your help.","괜찮아요. 도와줘서 고마워요."],["Good night. Sleep well, everyone.","잘 자요. 모두 푹 자요.","Good night. See you in the morning!","안녕히 주무세요. 아침에 봐요!"]]}];
+var HG={"a":"어","about":"어바웃","add":"애드","afraid":"어프레이드","after":"애프터","afternoon":"애프터눈","again":"어겐","agree":"어그리","agreed":"어그리드","ahead":"어헤드","air":"에어","aisle":"아일","alarm":"얼라암","album":"앨범","all":"올","allergic":"얼러직","almost":"올모스트","alone":"얼론","already":"올레디","always":"올웨이즈","amazing":"어메이징","an":"언","and":"앤드","answers":"앤서즈","any":"에니","anyone":"에니원","anything":"에니씽","anytime":"에니타임","apologize":"어팔러자이즈","apples":"애플즈","appointment":"어포인트먼트","appreciate":"어프리시에이트","are":"아","argue":"아규","around":"어라운드","arrange":"어레인지","arrive":"어라이브","as":"애즈","ask":"애스크","asking":"애스킹","at":"앳","awake":"어웨이크","away":"어웨이","back":"백","backpack":"백팩","bad":"배드","bag":"백","bags":"백즈","bake":"베이크","baked":"베이크트","balanced":"밸런스트","balcony":"발커니","balls":"볼즈","banana":"버내너","bananas":"버내너즈","basket":"배스킷","bathroom":"배쓰룸","battery":"배터리","be":"비","beach":"비치","bear":"베어","beautiful":"뷰티풀","bed":"베드","bedroom":"베드룸","beef":"비프","beeps":"비프스","before":"비포어","behind":"비하인드","being":"비잉","believe":"빌리브","bell":"벨","belong":"빌롱","belt":"벨트","best":"베스트","better":"베터","big":"빅","bigger":"비거","bill":"빌","birthday":"버쓰데이","bit":"빗","bite":"바이트","blanket":"블랭킷","blocks":"블락스","blooming":"블루밍","blue":"블루","board":"보드","bookshelf":"북쉘프","boots":"부츠","borrow":"바로우","bothers":"바더즈","bottle":"바틀","bottles":"바틀즈","bottom":"바텀","bought":"보트","bowl":"보울","box":"박스","boxes":"박시즈","bread":"브레드","break":"브레이크","breakfast":"브렉퍼스트","breath":"브레쓰","bring":"브링","broccoli":"브라콜리","brought":"브로트","brush":"브러쉬","buckle":"버클","budget":"버짓","build":"빌드","bulb":"벌브","burned":"번드","bus":"버스","busy":"비지","but":"벗","butter":"버터","button":"버튼","buy":"바이","by":"바이","bye":"바이","cake":"케이크","cakes":"케익스","call":"콜","calm":"캄","came":"케임","can":"캔","can't":"캔트","candles":"캔들즈","candy":"캔디","cans":"캔즈","card":"카드","care":"케어","careful":"케어풀","carefully":"케어풀리","carrot":"캐럿","carrots":"캐럿츠","carry":"캐리","cart":"카트","cat":"캣","certainly":"써튼리","chairs":"체어즈","change":"체인지","channel":"채널","charge":"차지","charger":"차저","cheaper":"칩퍼","check":"첵","cheers":"치어즈","cheese":"치즈","chewing":"츄잉","chocolate":"초콜릿","choose":"츄즈","chop":"찹","chopsticks":"찹스틱스","chores":"초어즈","class":"클래스","clean":"클린","cleaned":"클린드","cleaner":"클리너","cleaning":"클리닝","clocks":"클락스","clogged":"클락드","close":"클로즈","closer":"클로저","closet":"클로짓","closing":"클로징","cloth":"클로쓰","clothes":"클로즈","coat":"코트","coffee":"커피","cold":"콜드","color":"컬러","colors":"컬러즈","come":"컴","comfortable":"컴포터블","coming":"커밍","conditioner":"컨디셔너","confidence":"컨피던스","container":"컨테이너","cook":"쿡","cooked":"쿡트","cookies":"쿠키즈","cooking":"쿠킹","cool":"쿨","correct":"커렉트","could":"쿠드","counter":"카운터","course":"코스","covered":"커버드","cuddle":"커들","curtain":"커튼","curtains":"커튼즈","cut":"컷","cute":"큐트","dad":"대드","dark":"다크","date":"데이트","day":"데이","days":"데이즈","dead":"데드","deal":"딜","dear":"디어","decide":"디사이드","declare":"디클레어","delicious":"딜리셔스","delivery":"딜리버리","dessert":"디저트","detergent":"디터전트","did":"디드","didn't":"디든트","different":"디퍼런트","dinner":"디너","discuss":"디스커스","dish":"디쉬","dishes":"디쉬즈","dishwasher":"디쉬워셔","do":"두","doctor":"닥터","does":"더즈","doesn't":"더즌트","dog":"독","doing":"두잉","dollars":"달러즈","don't":"돈트","donate":"도네이트","done":"던","door":"도어","down":"다운","drain":"드레인","drawer":"드로어","drawing":"드로잉","dreams":"드림즈","dress":"드레스","dressed":"드레스트","dressing":"드레싱","drink":"드링크","drinking":"드링킹","drive":"드라이브","dry":"드라이","during":"듀어링","dust":"더스트","each":"이치","earlier":"얼리어","early":"얼리","easy":"이지","eat":"잇","eaten":"이튼","eating":"이팅","eggs":"에그즈","elbows":"엘보우즈","elderly":"엘더리","electricity":"일렉트리시티","enjoy":"인조이","enjoyed":"인조이드","enough":"이너프","every":"에브리","everyone":"에브리원","everything":"에브리씽","exactly":"이그잭틀리","exam":"이그잼","excited":"익사이티드","excuse":"익스큐즈","excused":"익스큐즈드","exercise":"엑서사이즈","exercising":"엑서사이징","expiration":"엑스피레이션","fabric":"패브릭","face":"페이스","failed":"페일드","fair":"페어","fairly":"페얼리","family":"패밀리","far":"파","faucet":"포싯","favor":"페이버","favorite":"페이버릿","feed":"피드","feel":"필","feels":"필즈","fever":"피버","fi":"파이","fifteen":"피프틴","fill":"필","find":"파인드","fine":"파인","finish":"피니쉬","finished":"피니쉬트","first":"퍼스트","fit":"핏","five":"파이브","fix":"픽스","flashlight":"플래쉬라이트","flies":"플라이즈","flight":"플라이트","floor":"플로어","flour":"플라워","flowers":"플라워즈","fold":"폴드","food":"푸드","for":"포","forecast":"포캐스트","forget":"포겟","forgive":"포기브","forgot":"포갓","forks":"포크스","forty":"포티","found":"파운드","four":"포","fragile":"프래절","free":"프리","freezing":"프리징","fresh":"프레쉬","friday":"프라이데이","fridge":"프리지","friend":"프렌드","friends":"프렌즈","from":"프럼","fruit":"프루트","full":"풀","fun":"펀","funny":"퍼니","game":"게임","gas":"개스","gave":"게이브","get":"겟","getting":"게링","gift":"기프트","give":"기브","gives":"기브즈","glad":"글래드","glass":"글래스","glasses":"글래시즈","gloves":"글러브즈","go":"고","goes":"고우즈","going":"고잉","good":"굿","got":"갓","grade":"그레이드","grandma":"그랜마","grandma's":"그랜마즈","grandmother's":"그랜드머더즈","grandpa":"그랜파","grateful":"그레이트풀","great":"그레이트","ground":"그라운드","grow":"그로우","had":"해드","hammer":"해머","hands":"핸즈","hang":"행","happen":"해픈","happened":"해픈드","happens":"해픈즈","happy":"해피","hard":"하드","has":"해즈","hat":"햇","have":"해브","having":"해빙","he":"히","he's":"히즈","headache":"헤데이크","health":"헬쓰","healthier":"헬띠어","hear":"히어","heat":"히트","heavy":"헤비","hello":"헬로","help":"헬프","helper":"헬퍼","helpful":"헬프풀","helping":"헬핑","helps":"헬프스","here":"히어","hesitate":"헤지테이트","hi":"하이","higher":"하이어","him":"힘","hobby":"하비","hold":"홀드","holiday":"할러데이","holidays":"할러데이즈","home":"홈","homework":"홈워크","honey":"허니","hope":"호프","hot":"핫","hour":"아워","house":"하우스","how":"하우","hundred":"헌드레드","hurry":"허리","hurt":"허트","i":"아이","i'd":"아이드","i'll":"아일","i'm":"아임","i've":"아이브","icy":"아이시","idea":"아이디어","ideas":"아이디어즈","if":"이프","in":"인","ingredients":"인그리디언츠","inside":"인사이드","instead":"인스테드","interested":"인터레스티드","interesting":"인터레스팅","interrupt":"인터럽트","interview":"인터뷰","introduce":"인트러듀스","invite":"인바이트","inviting":"인바이팅","iron":"아이언","is":"이즈","isn't":"이즌트","it":"잇","it's":"잇츠","italian":"이탤리언","jacket":"재킷","job":"잡","jog":"조그","joy":"조이","juice":"쥬스","just":"저스트","keep":"킵","keys":"키즈","kids":"키즈","kilometers":"킬로미터즈","kim":"킴","kind":"카인드","kindness":"카인드니스","kitchen":"키친","knock":"낙","know":"노우","last":"래스트","late":"레이트","later":"레이터","laundry":"런드리","leaking":"리킹","leash":"리쉬","least":"리스트","leave":"리브","leaving":"리빙","lee":"리","left":"레프트","leftovers":"레프트오버즈","legs":"렉스","lend":"렌드","less":"레스","let":"렛","let's":"렛츠","life":"라이프","lift":"리프트","light":"라이트","lights":"라이츠","like":"라이크","liked":"라이크트","likewise":"라이크와이즈","line":"라인","list":"리스트","listen":"리슨","litter":"리터","little":"리틀","live":"리브","living":"리빙","load":"로드","log":"로그","long":"롱","look":"룩","looks":"룩스","lot":"랏","lots":"랏츠","loud":"라우드","love":"러브","lovely":"러블리","low":"로우","luck":"럭","lunch":"런치","machine":"머신","made":"메이드","make":"메이크","makes":"메익스","making":"메이킹","many":"메니","math":"매쓰","matter":"매터","may":"메이","maybe":"메이비","me":"미","meal":"밀","meals":"밀즈","mean":"민","means":"민즈","meat":"밋","medicine":"메디슨","medium":"미디엄","meet":"밋","meeting":"미팅","membership":"멤버쉽","mention":"멘션","menu":"메뉴","mess":"메스","message":"메시지","messages":"메시지즈","microwave":"마이크로웨이브","middle":"미들","might":"마이트","milk":"밀크","mind":"마인드","minute":"미닛","minutes":"미닛츠","mirror":"미러","miss":"미스","mistakes":"미스테익스","mittens":"미튼즈","mitts":"미츠","mix":"믹스","mom":"맘","money":"머니","month":"먼쓰","monthly":"먼쓸리","mop":"맙","more":"모어","morning":"모닝","mouth":"마우쓰","move":"무브","moved":"무브드","movie":"무비","mr":"미스터","much":"머치","must":"머스트","my":"마이","myself":"마이셀프","nails":"네일즈","need":"니드","needed":"니디드","needs":"니즈","neighborhood":"네이버후드","neighbors":"네이버즈","nervous":"너버스","new":"뉴","newspaper":"뉴스페이퍼","next":"넥스트","nice":"나이스","night":"나이트","nine":"나인","no":"노","noise":"노이즈","noisy":"노이지","noodle":"누들","noodles":"누들즈","nose":"노즈","not":"낫","notebook":"노트북","nothing":"나씽","now":"나우","number":"넘버","nuts":"넛츠","of":"어브","off":"오프","offering":"오퍼링","often":"오픈","oh":"오","oil":"오일","okay":"오케이","old":"올드","olive":"올리브","on":"온","one":"원","ones":"원즈","onions":"어니언즈","only":"온리","oops":"웁스","open":"오픈","opened":"오픈드","opinion":"어피니언","or":"오어","order":"오더","ordered":"오더드","organize":"올거나이즈","other":"아더","others":"아더즈","our":"아워","ourselves":"아워셀브즈","out":"아웃","outfits":"아웃핏츠","outside":"아웃사이드","oven":"어븐","over":"오버","overslept":"오버슬렙트","own":"오운","pack":"팩","packed":"팩트","paint":"페인트","pan":"팬","pancakes":"팬케익스","paper":"페이퍼","park":"파크","pass":"패스","passport":"패스포트","past":"패스트","pay":"페이","peanuts":"피넛츠","people":"피플","percent":"퍼센트","perfect":"퍼펙트","person":"퍼슨","phone":"폰","photo":"포토","photos":"포토즈","pick":"픽","picnic":"피크닉","picture":"픽처","piece":"피스","pillow":"필로우","pizza":"피자","place":"플레이스","plan":"플랜","plans":"플랜즈","plant":"플랜트","plants":"플랜츠","plastic":"플라스틱","plates":"플레이츠","play":"플레이","played":"플레이드","playing":"플레잉","pleasant":"플레전트","please":"플리즈","pleasure":"플레저","plenty":"플렌티","plumber":"플러머","point":"포인트","politely":"폴라이틀리","post":"포스트","pour":"포어","pouring":"포어링","power":"파워","prayer":"프레어","prefer":"프리퍼","preheated":"프리히티드","prepare":"프리페어","present":"프레전트","press":"프레스","privacy":"프라이버시","private":"프라이빗","probably":"프라바블리","problem":"프라블럼","project":"프라젝트","promise":"프라미스","promises":"프라미시즈","properly":"프라펄리","proud":"프라우드","pull":"풀","puppy":"퍼피","put":"풋","question":"퀘스천","quickly":"퀵클리","rain":"레인","rainy":"레이니","raising":"레이징","read":"리드","reading":"리딩","ready":"레디","really":"리얼리","recipe":"레서피","recycling":"리사이클링","refund":"리펀드","relatives":"렐러티브즈","relax":"릴랙스","remember":"리멤버","reminding":"리마인딩","remote":"리모트","rent":"렌트","repairman":"리페어맨","replace":"리플레이스","reservation":"레저베이션","reset":"리셋","resolution":"레졸루션","respecting":"리스펙팅","rest":"레스트","restart":"리스타트","restaurant":"레스터런트","return":"리턴","reusable":"리유저블","rice":"라이스","right":"라이트","ring":"링","rinse":"린스","rise":"라이즈","road":"로드","roads":"로즈","room":"룸","router":"루터","run":"런","running":"러닝","rush":"러쉬","sad":"새드","safe":"세이프","safely":"세이플리","said":"세드","salad":"샐러드","sale":"세일","salt":"솔트","salty":"솔티","same":"세임","sandwiches":"샌드위치즈","saturday":"새터데이","sauce":"소스","save":"세이브","saved":"세이브드","saves":"세이브즈","say":"세이","says":"세즈","scarf":"스카프","school":"스쿨","scrambled":"스크램블드","scratch":"스크래치","scratched":"스크래치트","scratching":"스크래칭","screwdriver":"스크루드라이버","scrub":"스크럽","seat":"싯","seated":"시티드","second":"세컨드","see":"씨","seem":"심","separate":"세퍼레이트","served":"서브드","set":"셋","seven":"세븐","shall":"쉘","share":"쉐어","shelf":"쉘프","shelves":"쉘브즈","shine":"샤인","shirt":"셔트","shirts":"셔츠","shoes":"슈즈","shopping":"샤핑","short":"쇼트","should":"슈드","shouldn't":"슈든트","show":"쇼","simmer":"시머","sink":"싱크","sister":"시스터","sit":"싯","sits":"싯츠","six":"식스","size":"사이즈","skip":"스킵","sleep":"슬립","sleepy":"슬리피","slept":"슬렙트","slippers":"슬리퍼즈","slippery":"슬리퍼리","slower":"슬로어","slowly":"슬로울리","small":"스몰","smell":"스멜","smells":"스멜즈","smile":"스마일","snack":"스낵","snacks":"스낵스","sneakers":"스니커즈","snow":"스노우","snowing":"스노잉","snowman":"스노우맨","so":"소","soak":"소크","soccer":"사커","socks":"삭스","soda":"소다","sofa":"소파","soft":"소프트","softener":"소프너","some":"섬","someone":"섬원","something":"섬씽","sometimes":"섬타임즈","somewhere":"섬웨어","son":"선","soon":"순","sore":"소어","sorry":"쏘리","sound":"사운드","sounds":"사운즈","soup":"숩","space":"스페이스","speak":"스피크","speaking":"스피킹","spent":"스펜트","spoon":"스푼","spot":"스팟","spots":"스팟츠","stain":"스테인","stairs":"스테어즈","stand":"스탠드","start":"스타트","starving":"스타빙","stay":"스테이","steak":"스테이크","step":"스텝","stew":"스튜","sticky":"스티키","still":"스틸","store":"스토어","story":"스토리","straight":"스트레이트","street":"스트리트","stretch":"스트레치","studied":"스터디드","studying":"스터딩","such":"서치","sugar":"슈거","suits":"수츠","summer":"서머","sunlight":"선라이트","sunny":"서니","sure":"슈어","sweet":"스윗","sweets":"스윗츠","syrup":"시럽","table":"테이블","take":"테이크","taken":"테이큰","taking":"테이킹","talk":"톡","talking":"토킹","taste":"테이스트","tastes":"테이스츠","tasty":"테이스티","tea":"티","team":"팀","teeth":"티쓰","tell":"텔","ten":"텐","test":"테스트","text":"텍스트","than":"댄","thank":"땡크","thanks":"땡스","that":"댓","that's":"댓츠","the":"더","their":"데어","them":"뎀","then":"덴","there":"데어","there's":"데어즈","thermometer":"써마미터","these":"디즈","they":"데이","they'll":"데이을","they're":"데어","thin":"씬","things":"씽즈","think":"씽크","thirty":"써티","this":"디스","those":"도우즈","thoughtful":"쏘트풀","three":"쓰리","throat":"쓰로트","throw":"쓰로우","tidy":"타이디","tie":"타이","tight":"타이트","tighten":"타이튼","time":"타임","timer":"타이머","times":"타임즈","tip":"팁","tired":"타이어드","to":"투","toast":"토스트","today":"투데이","together":"투게더","toilet":"토일렛","token":"토큰","tom":"탐","tomatoes":"터메이토즈","tomorrow":"터마로우","tonight":"투나이트","too":"투","took":"툭","toolbox":"툴박스","top":"탑","toppings":"토핑즈","touch":"터치","towel":"타월","towels":"타월즈","toy":"토이","toys":"토이즈","traffic":"트래픽","transferred":"트랜스퍼드","trash":"트래쉬","travel":"트래블","trip":"트립","trouble":"트러블","trust":"트러스트","try":"트라이","trying":"트라잉","tub":"텁","turn":"턴","turned":"턴드","tv":"티비","umbrella":"엄브렐러","under":"언더","underneath":"언더니쓰","understand":"언더스탠드","understanding":"언더스탠딩","unplug":"언플러그","unplugged":"언플러그드","until":"언틸","up":"업","upset":"업셋","upstairs":"업스테어즈","us":"어스","use":"유즈","usual":"유주얼","vacation":"베이케이션","vacuum":"배큠","vegetables":"베지터블즈","very":"베리","vet":"벳","visit":"비짓","voice":"보이스","volume":"발륨","vote":"보트","wait":"웨이트","wake":"웨이크","walk":"워크","wall":"월","want":"원트","wanted":"원티드","warm":"웜","warmth":"웜쓰","was":"워즈","wash":"워쉬","washed":"워쉬트","washing":"워싱","wasn't":"워즌트","waste":"웨이스트","watch":"워치","water":"워터","way":"웨이","we":"위","we'll":"위일","we're":"위어","wear":"웨어","weather":"웨더","weeds":"위즈","week":"위크","weekend":"위켄드","weekends":"위켄즈","welcome":"웰컴","well":"웰","went":"웬트","were":"워","wet":"웻","what":"왓","what's":"왓츠","when":"웬","where":"웨어","where's":"웨어즈","which":"위치","while":"와일","whisper":"위스퍼","white":"와이트","who":"후","whole":"홀","why":"와이","wi":"와이","will":"윌","window":"윈도우","windows":"윈도우즈","windy":"윈디","winter":"윈터","wipe":"와이프","wish":"위쉬","wished":"위쉬트","with":"위드","within":"위딘","without":"위다웃","wonderful":"원더풀","worked":"워크트","working":"워킹","worry":"워리","would":"우드","wow":"와우","wrench":"렌치","wrinkled":"링클드","write":"라이트","wrong":"롱","year":"이어","year's":"이어즈","yes":"예스","yet":"옛","you":"유","you'll":"유을","you're":"유어","your":"유어","yourself":"유어셀프","twelve":"트웰브","twenty":"트웬티"};
+(function(){
+"use strict";
+var synth = window.speechSynthesis;
+var STAGES = [
+  {id:1,name:"1단계 · 듣기",desc:"전체 대화를 3번 듣기 · 처음은 천천히, 다음 2번은 보통 속도"},
+  {id:2,name:"2단계 · 대화 듣기",desc:"A가 묻고, 대답할 시간을 준 뒤 B가 대답 (전체 2번, 해석 없음)"},
+  {id:3,name:"3단계 · 한글 보고 말하기",desc:"A용, B용 한글을 보고 영어로 말하기 (각각 2번)"},
+  {id:4,name:"4단계 · 직접 말하기 (마이크)",desc:"해석을 누르고 영어로 말하면 발음을 한글로 보여주고 피드백해 줘요"}
+];
+var S = {day:1,block:0,view:"home",done:{},st:{delay:1,rate:0.9,en:true,ko:true,koVoice:true,vA:"",vB:"",auto:true}};
+var V = {a:null,b:null,ko:null,sep:false,en:[]};
+var P = {steps:[],i:0,tok:0,paused:false,playing:false,stage:0};
+
+function load(){try{var r=localStorage.getItem("hs-v1");if(r){var o=JSON.parse(r);if(o.done)S.done=o.done;if(o.st)Object.assign(S.st,o.st);if(o.day)S.day=o.day;}}catch(e){}}
+function save(){try{localStorage.setItem("hs-v1",JSON.stringify({done:S.done,st:S.st,day:S.day}));}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function $(s){return document.querySelector(s);}
+function dayDone(n){var d=S.done[n]||{};return !!(d[1]&&d[2]&&d[3]&&(d[4]||!S.st.micUsed));}
+function doneCount(){var c=0;for(var i=1;i<=DATA.length;i++)if(dayDone(i))c++;return c;}
+
+/* ---------- voices ---------- */
+function pickVoices(){
+  if(!synth)return;
+  var all=synth.getVoices()||[];
+  var en=all.filter(function(v){return /^en/i.test(v.lang);});
+  en.sort(function(a,b){return (/en[-_]US/i.test(b.lang)?1:0)-(/en[-_]US/i.test(a.lang)?1:0);});
+  V.en=en;
+  var fem=/samantha|zira|jenny|aria|female|karen|victoria|susan|google us english|allison|ava|joanna|serena|moira|tessa/i;
+  var mal=/david|daniel|alex|mark|guy|male|fred|tom|george|james|ryan|aaron|arthur/i;
+  var byName=function(n){return en.filter(function(v){return v.name===n;})[0];};
+  V.a=byName(S.st.vA)||en.filter(function(v){return fem.test(v.name);})[0]||en[0]||null;
+  V.b=byName(S.st.vB)||en.filter(function(v){return mal.test(v.name)&&v!==V.a;})[0]||en.filter(function(v){return v!==V.a;})[0]||en[0]||null;
+  V.sep=!!(V.a&&V.b&&V.a!==V.b);
+  V.ko=all.filter(function(v){return /^ko/i.test(v.lang);})[0]||null;
+}
+if(synth){pickVoices();synth.onvoiceschanged=function(){pickVoices();if(S.view==="day"&&!P.playing)render();};}
+
+function speak(text,lang,role,rate){
+  return new Promise(function(res){
+    if(!synth){setTimeout(res,600);return;}
+    var u=new SpeechSynthesisUtterance(text),done=false,t;
+    var ko=lang==="ko-KR";
+    u.lang=lang;u.rate=ko?1:(rate||S.st.rate);
+    var v=ko?V.ko:(role==="A"?V.a:V.b);if(v)u.voice=v;
+    if(!ko&&!V.sep)u.pitch=role==="A"?1.2:0.8;
+    function fin(){if(!done){done=true;clearTimeout(t);res();}}
+    u.onend=fin;u.onerror=fin;
+    t=setTimeout(fin,3500+text.length*130/u.rate);
+    synth.speak(u);
+  });
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+/* ---------- steps ---------- */
+function wordCount(s){return s.split(/\s+/).length;}
+function delayFor(en){var d=2.5+wordCount(en)*0.35;d=Math.max(4,Math.min(7,d));return Math.round(d*S.st.delay*10)/10;}
+function buildSteps(day,stage){
+  var p=DATA[day-1].p,out=[];
+  function say(lang,role,text,pair,extra){out.push(Object.assign({t:"say",lang:lang,role:role,text:text,pair:pair,stage:stage},extra||{}));}
+  function wait(sec,kind,pair,extra){out.push(Object.assign({t:"wait",sec:sec,kind:kind,pair:pair,stage:stage},extra||{}));}
+  var k,r,w;
+  if(stage===1){
+    for(r=1;r<=3;r++){
+      p.forEach(function(q,i){
+        [["A",q[0],q[1]],["B",q[2],q[3]]].forEach(function(l){
+          say("en-US",l[0],l[1],i,{ko:l[2],round:r,rounds:3,slow:r===1});
+          wait(r===1?1.8:1.2,"gap",i,{round:r,rounds:3});
+        });
+      });
+      if(r<3)wait(2.5,"gap",0,{round:r,rounds:3});
+    }
+  }else if(stage===2){
+    for(r=1;r<=2;r++)p.forEach(function(q,i){
+      say("en-US","A",q[0],i,{ko:q[1],round:r,rounds:2});
+      wait(delayFor(q[2]),"answer",i,{round:r,rounds:2});
+      say("en-US","B",q[2],i,{ko:q[3],round:r,rounds:2});
+      wait(1.6,"gap",i,{round:r,rounds:2});
+    });
+  }else{
+    ["A","B"].forEach(function(who){
+      for(r=1;r<=2;r++)p.forEach(function(q,i){
+        var en=who==="A"?q[0]:q[2],ko=who==="A"?q[1]:q[3];
+        if(S.st.koVoice&&V.ko||!synth)say("ko-KR",who,ko,i,{ko:ko,hideEn:true,round:r,rounds:2,who:who});
+        else out.push({t:"show",role:who,pair:i,ko:ko,hideEn:true,stage:stage,round:r,rounds:2,who:who});
+        wait(delayFor(en),"speak",i,{ko:ko,hideEn:true,round:r,rounds:2,who:who,role:who});
+        say("en-US",who,en,i,{ko:ko,round:r,rounds:2,who:who});
+        wait(1.4,"gap",i,{round:r,rounds:2,who:who,ko:ko});
+      });
+    });
+  }
+  return out;
+}
+
+/* ---------- player ---------- */
+function stageLabel(st){
+  var base=STAGES[st.stage-1].name;
+  if(st.stage===3&&st.who)base+=" · "+st.who+"용";
+  if(st.rounds)base+=" · "+st.round+"/"+st.rounds+"회"+(st.slow?" (천천히)":"");
+  return base;
+}
+function stopSpeech(){if(synth)synth.cancel();}
+function startFrom(i){
+  P.tok++;var tok=P.tok;stopSpeech();
+  P.i=Math.max(0,Math.min(i,P.steps.length-1));P.paused=false;P.playing=true;
+  render(true);run(tok);
+}
+async function run(tok){
+  for(;P.i<P.steps.length;P.i++){
+    if(tok!==P.tok)return;
+    var st=P.steps[P.i];
+    paintNow(st);
+    if(st.t==="say"){await speak(st.text,st.lang,st.role,st.slow?Math.max(0.5,S.st.rate*0.75):null);}
+    else if(st.t==="show"){await sleep(500);}
+    else{await countdown(st,tok);}
+    if(tok!==P.tok)return;
+    var nx=P.steps[P.i+1];
+    if(!nx||nx.stage!==st.stage)markStage(st.stage);
+  }
+  if(tok===P.tok)finish();
+}
+function countdown(st,tok){
+  return new Promise(function(res){
+    var t0=Date.now(),total=st.sec*1000;
+    (function tick(){
+      if(tok!==P.tok){res();return;}
+      var el=Date.now()-t0,left=Math.max(0,total-el);
+      var bar=$("#cd"),num=$("#cdn");
+      if(bar)bar.style.width=(st.kind==="gap"?0:(left/total*100))+"%";
+      if(num&&st.kind!=="gap")num.textContent=Math.ceil(left/1000)+"초";
+      if(left<=0){res();return;}
+      setTimeout(tick,100);
+    })();
+  });
+}
+function markStage(n){
+  var d=S.done[S.day]||(S.done[S.day]={});
+  if(!d[n]){d[n]=true;save();}
+  paintStages();
+}
+function finish(){P.playing=false;P.paused=false;P.steps=[];render();}
+function stopAll(){P.tok++;stopSpeech();P.playing=false;P.paused=false;P.steps=[];render();}
+function pauseToggle(){
+  if(!P.playing)return;
+  if(!P.paused){P.paused=true;P.tok++;stopSpeech();paintSheet();}
+  else{startFrom(P.i);}
+}
+function playStages(list){
+  var steps=[];list.forEach(function(s){steps=steps.concat(buildSteps(S.day,s));});
+  P.steps=steps;startFrom(0);
+}
+async function playOne(en,role){
+  if(P.playing)return;
+  P.tok++;stopSpeech();await speak(en,"en-US",role);
+}
+
+/* ---------- render ---------- */
+function paintNow(st){
+  var box=$("#now");if(!box)return;
+  var pr=$("#prog");if(pr)pr.style.width=(P.i/Math.max(1,P.steps.length)*100)+"%";
+  var meta=$("#meta");if(meta)meta.textContent=stageLabel(st);
+  var cnt=$("#cnt");if(cnt)cnt.textContent=(P.i+1)+" / "+P.steps.length;
+  if(st.t==="wait"&&st.kind==="gap"){return;}
+  var role=st.role||"A";
+  var enText=(st.t==="say"&&st.lang==="en-US")?st.text:"";
+  var koText=st.ko||"";
+  var html="";
+  if(st.t==="wait"&&st.kind!=="gap"){
+    var msg=st.kind==="answer"?"B가 되어 영어로 대답해 보세요":"지금 영어로 말해 보세요";
+    html='<span class="badge you">'+msg+'</span>';
+    if(st.kind==="speak"&&st.who)html='<span class="badge '+st.who+'">'+st.who+'용 · '+msg+'</span>';
+    if(st.kind==="speak")html+='<div class="ko">'+esc(koText)+'</div>';
+    html+='<div class="bar" aria-hidden="true"><i id="cd"></i></div><div class="pill" id="cdn" style="font-size:.9rem;color:var(--muted)"></div>';
+  }else if(st.t==="wait"){
+    html='<span class="badge '+(st.who||"A")+'" style="visibility:hidden">·</span><div class="ko" style="color:var(--muted)">…</div><i id="cd" hidden></i>';
+  }else if(st.t==="show"||(st.t==="say"&&st.lang==="ko-KR")){
+    html='<span class="badge '+(st.who||role)+'">'+(st.who||role)+'용 한글</span><div class="ko" style="font-size:1.25rem;font-weight:700">'+esc(koText)+'</div>';
+  }else{
+    html='<span class="badge '+role+'">'+role+(role==="A"?" · 묻기":" · 대답")+(st.slow?" · 천천히":"")+'</span>';
+    if(S.st.en||st.stage===3)html+='<div class="en">'+esc(enText)+'</div>';
+  }
+  box.innerHTML=html;
+  document.querySelectorAll(".line.on").forEach(function(n){n.classList.remove("on");});
+  var ln=document.querySelector('[data-pair="'+st.pair+'"]');
+  if(ln){ln.classList.add("on");}
+}
+function paintSheet(){
+  var sh=$("#sheet");
+  if(!P.playing){sh.hidden=true;return;}
+  sh.hidden=false;
+  sh.innerHTML='<div class="sheet-in"><div class="meta"><span id="meta"></span><span id="cnt" class="pill"></span></div>'+
+   '<div class="progress" style="margin:0"><i id="prog"></i></div>'+
+   '<div class="now" id="now" aria-live="polite"></div>'+
+   '<div class="ctl"><button class="btn" id="bprev" aria-label="이전">이전</button>'+
+   '<button class="btn primary" id="bpause">'+(P.paused?"계속":"일시정지")+'</button>'+
+   '<button class="btn" id="bnext" aria-label="다음">다음</button>'+
+   '<button class="btn" id="bstop">그만</button></div></div>';
+  $("#bprev").onclick=function(){var i=P.i-1;while(i>0&&P.steps[i].t!=="say"&&P.steps[i].t!=="show")i--;startFrom(Math.max(0,i));};
+  $("#bnext").onclick=function(){var i=P.i+1;while(i<P.steps.length-1&&P.steps[i].t==="wait")i++;if(i>=P.steps.length){stopAll();return;}startFrom(i);};
+  $("#bpause").onclick=pauseToggle;
+  $("#bstop").onclick=stopAll;
+  paintNow(P.steps[P.i]);
+}
+function paintStages(){
+  var d=S.done[S.day]||{};
+  document.querySelectorAll("[data-stage]").forEach(function(b){
+    var n=+b.getAttribute("data-stage");
+    b.classList.toggle("done",!!d[n]);
+    b.querySelector(".tag").textContent=d[n]?"완료":"미완료";
+  });
+}
+function render(keepSheet){
+  var app=$("#app");
+  app.classList.toggle("playing",P.playing);
+  if(S.view==="home")renderHome(app);else if(S.view==="speak")renderSpeak(app);else renderDay(app);
+  if(S.view!=="speak"&&(keepSheet||P.playing))paintSheet();else $("#sheet").hidden=true;
+}
+function renderHome(app){
+  var n=DATA.length,dc=doneCount(),next=1;
+  for(var i=1;i<=n;i++){if(!dayDone(i)){next=i;break;}}
+  var h='<div class="top"><div><h1>집에서 영어 회화</h1><p class="sub">하루 5쌍, 열 문장. 듣고, 대화하고, 직접 말해 보세요.</p></div></div>';
+  h+='<div><strong>'+dc+'</strong> / '+n+'일 완료</div><div class="progress"><i style="width:'+(dc/n*100)+'%"></i></div>';
+  h+='<button class="btn primary" id="go-next" style="width:100%">Day '+next+' 시작하기 · '+esc(DATA[next-1].t)+'</button>';
+  h+='<div class="tabs" role="tablist" style="margin-top:20px">';
+  for(var b=0;b<Math.ceil(n/15);b++)h+='<button class="tab" role="tab" data-b="'+b+'" aria-selected="'+(S.block===b)+'">Day '+(b*15+1)+'–'+Math.min(n,b*15+15)+'</button>';
+  h+='</div><div class="days">';
+  for(var d=S.block*15+1;d<=Math.min(n,S.block*15+15);d++){
+    h+='<button class="day'+(dayDone(d)?" done":"")+'" data-d="'+d+'"><b><em style="font-style:normal">Day '+d+'</em>'+(dayDone(d)?'<em style="font-style:normal">완료</em>':'')+'</b><span>'+esc(DATA[d-1].t)+'</span></button>';
+  }
+  h+='</div>';
+  app.innerHTML=h;
+  $("#go-next").onclick=function(){openDay(next);};
+  app.querySelectorAll(".tab").forEach(function(t){t.onclick=function(){S.block=+t.getAttribute("data-b");render();};});
+  app.querySelectorAll(".day").forEach(function(t){t.onclick=function(){openDay(+t.getAttribute("data-d"));};});
+}
+function openDay(n){S.day=n;S.block=Math.floor((n-1)/15);S.view="day";save();render();window.scrollTo(0,0);}
+function opt(list,sel,blank){
+  var h='<option value="">'+blank+'</option>';
+  list.forEach(function(v){h+='<option value="'+esc(v.name)+'"'+(v.name===sel?" selected":"")+'>'+esc(v.name)+' ('+esc(v.lang)+')</option>';});
+  return h;
+}
+function renderDay(app){
+  var D=DATA[S.day-1];
+  var h='<div class="top"><div><button class="btn small" id="back">← 목록</button>'+
+    '<h1 style="margin-top:12px">Day '+S.day+' · '+esc(D.t)+'</h1><p class="sub">'+esc(D.e)+'</p></div></div>';
+  h+='<button class="btn primary" id="all" style="width:100%">1~3단계 이어서 재생</button>';
+  h+='<div class="stages">';
+  STAGES.forEach(function(s){h+='<button class="stage" data-stage="'+s.id+'"><strong>'+s.name+'</strong><small>'+s.desc+'</small><span class="tag">미완료</span></button>';});
+  h+='</div><p class="note">4단계는 마이크가 필요해요. 크롬이나 엣지에서 파일을 직접 열고, 처음 뜨는 허용 창에서 "사이트에 있는 동안 허용"을 누르세요. 그다음부터는 문장마다 "다음"만 누르면 바로 들어요.</p>';
+  h+='<h2>오늘의 대화</h2><div class="script">';
+  D.p.forEach(function(q,i){
+    h+='<div class="pair" data-pair="'+i+'">'+
+     '<button class="line A" data-say="'+i+'A"><span class="who">A</span>'+(S.st.en?'<span class="en">'+esc(q[0])+'</span>':'')+'</button>'+
+     '<button class="line B" data-say="'+i+'B"><span class="who">B</span>'+(S.st.en?'<span class="en">'+esc(q[2])+'</span>':'')+'</button></div>';
+  });
+  h+='</div><p class="note">대화는 A와 B 영어 문장만 표시됩니다. 문장을 누르면 그 문장만 다시 들을 수 있어요.</p>';
+  h+='<details class="set"><summary>설정</summary><div class="grid2">'+
+    '<label>대답 시간<select id="s-delay"><option value="0.75">짧게</option><option value="1">보통</option><option value="1.4">길게</option><option value="1.9">아주 길게</option></select></label>'+
+    '<label>말하기 속도<select id="s-rate"><option value="0.75">느리게</option><option value="0.9">보통</option><option value="1">빠르게</option></select></label>'+
+    '<label>A 음성<select id="s-va">'+opt(V.en,V.a&&V.a.name,"자동")+'</select></label>'+
+    '<label>B 음성<select id="s-vb">'+opt(V.en,V.b&&V.b.name,"자동")+'</select></label>'+
+    '<label class="chk"><input type="checkbox" id="s-en"> 영어 문장 보기</label>'+
+    '<label class="chk"><input type="checkbox" id="s-kv"> 3단계에서 한글을 음성으로 읽기</label></div>'+
+    '<p class="note">'+(V.en.length?"이 기기의 영어 음성 "+V.en.length+"개를 사용할 수 있어요.":"영어 음성을 찾지 못했어요. 브라우저나 기기의 음성 설정을 확인해 주세요.")+(V.ko?"":" 한국어 음성이 없으면 한글은 화면으로만 보여 줍니다.")+'</p></details>';
+  app.innerHTML=h;
+  $("#s-delay").value=String(S.st.delay);$("#s-rate").value=String(S.st.rate);
+  $("#s-en").checked=S.st.en;$("#s-kv").checked=S.st.koVoice;
+  $("#back").onclick=function(){stopAll();S.view="home";render();};
+  $("#all").onclick=function(){playStages([1,2,3]);};
+  app.querySelectorAll(".stage").forEach(function(b){b.onclick=function(){var n=+b.getAttribute("data-stage");if(n===4)startSpeak();else playStages([n]);};});
+  app.querySelectorAll("[data-say]").forEach(function(b){b.onclick=function(){
+    var k=b.getAttribute("data-say"),i=+k.slice(0,-1),r=k.slice(-1),q=D.p[i];
+    playOne(r==="A"?q[0]:q[2],r);};});
+  function bind(id,fn){$(id).onchange=function(){fn(this);save();};}
+  bind("#s-delay",function(e){S.st.delay=+e.value;});
+  bind("#s-rate",function(e){S.st.rate=+e.value;});
+  bind("#s-va",function(e){S.st.vA=e.value;pickVoices();});
+  bind("#s-vb",function(e){S.st.vB=e.value;pickVoices();});
+  bind("#s-en",function(e){S.st.en=e.checked;renderKeepOpen();});
+  bind("#s-kv",function(e){S.st.koVoice=e.checked;});
+  paintStages();
+}
+function renderKeepOpen(){render();var d=document.querySelector("details.set");if(d)d.open=true;}
+
+
+/* ---------- 4단계: 말하기 코치 ---------- */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var SP=null,REC=null;
+var CONTR={"i'm":"i am","i'll":"i will","i'd":"i would","i've":"i have","it's":"it is","that's":"that is","there's":"there is","what's":"what is","where's":"where is","he's":"he is","let's":"let us","don't":"do not","doesn't":"does not","didn't":"did not","can't":"can not","cannot":"can not","isn't":"is not","wasn't":"was not","shouldn't":"should not","we'll":"we will","we're":"we are","they'll":"they will","they're":"they are","you'll":"you will","you're":"you are","ok":"okay"};
+var NUM={"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine","10":"ten","11":"eleven","12":"twelve","15":"fifteen","20":"twenty","30":"thirty","40":"forty","100":"hundred"};
+var HOMO=[["their","there","they're"],["to","too","two"],["your","you're"],["hear","here"],["our","are","hour"],["write","right"],["by","buy","bye"],["wear","where"],["for","four"],["its","it's"]];
+function toks(w){
+  w=w.toLowerCase().replace(/^\$/,"");
+  if(NUM[w])w=NUM[w];
+  if(CONTR[w])return CONTR[w].split(" ");
+  if(/'s$/.test(w)&&w.length>3)return [w.slice(0,-2)];
+  return [w];
+}
+function words(str){return (str.match(/[$A-Za-z0-9]+(?:'[A-Za-z]+)?/g)||[]);}
+function eq(a,b){
+  if(a===b)return true;
+  for(var i=0;i<HOMO.length;i++)if(HOMO[i].indexOf(a)>=0&&HOMO[i].indexOf(b)>=0)return true;
+  return false;
+}
+function hg(w){
+  w=w.toLowerCase();
+  if(HG[w])return HG[w];
+  var t=w.replace(/^\$/,"");
+  if(NUM[t]&&HG[NUM[t]])return HG[NUM[t]];
+  return null;
+}
+function evaluate(target,heard){
+  var tw=words(target),T=[],owner=[];
+  tw.forEach(function(w,i){toks(w).forEach(function(t){T.push(t);owner.push(i);});});
+  var H=[];words(heard).forEach(function(w){toks(w).forEach(function(t){H.push(t);});});
+  var n=T.length,m=H.length,L=[],i,j;
+  for(i=0;i<=n;i++){L.push([]);for(j=0;j<=m;j++)L[i].push(0);}
+  for(i=n-1;i>=0;i--)for(j=m-1;j>=0;j--)L[i][j]=eq(T[i],H[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  var hit=T.map(function(){return false;});i=0;j=0;
+  while(i<n&&j<m){if(eq(T[i],H[j])){hit[i]=true;i++;j++;}else if(L[i+1][j]>=L[i][j+1])i++;else j++;}
+  var ok=tw.map(function(){return true;});
+  hit.forEach(function(h,k){if(!h)ok[owner[k]]=false;});
+  var good=ok.filter(function(x){return x;}).length;
+  return {words:tw,ok:ok,score:tw.length?good/tw.length:0};
+}
+function tipFor(missed){
+  for(var k=0;k<missed.length;k++){
+    var w=missed[k].toLowerCase();
+    if(/th/.test(w))return "'"+missed[k]+"': th는 혀끝을 윗니와 아랫니 사이에 살짝 대고 바람을 내보내며 소리 내 보세요.";
+    if(/f|ph/.test(w))return "'"+missed[k]+"': f는 윗니를 아랫입술에 살짝 대고 바람을 내보내세요. 'ㅍ'이 아니에요.";
+    if(/v/.test(w))return "'"+missed[k]+"': v는 윗니를 아랫입술에 대고 목을 울려 'ㅂ'보다 가볍게 내세요.";
+    if(/^r|[^a-z]r/.test(w))return "'"+missed[k]+"': r은 혀끝을 입천장에 닿지 않게 말아서 소리 내세요.";
+    if(/l/.test(w))return "'"+missed[k]+"': l은 혀끝을 윗잇몸에 붙이고 소리 내세요. 끝의 l은 '르'보다 '을'에 가까워요.";
+    if(/[tdpkb]$/.test(w))return "'"+missed[k]+"': 끝소리 "+w.slice(-1)+"는 '으'를 붙이지 말고 짧게 끊어 주세요.";
+  }
+  return "빠진 단어를 천천히 또렷하게 한 번 더 말해 보세요. 문장 끝까지 끊기지 않게 이어 말하면 좋아요.";
+}
+var PRAISE=["아주 좋아요! 발음이 또렷해요.","훌륭해요! 원어민이 알아들을 정도예요.","정말 잘했어요! 이 느낌 그대로 가요.","완벽에 가까워요. 자신감이 느껴져요!"];
+var MID=["거의 다 왔어요! 표시된 단어만 다시 짚어 볼까요?","좋아요. 조금만 더 또렷하게 말해 봐요.","잘하고 있어요. 주황색 단어를 한 번 더 연습해요."];
+var LOW=["괜찮아요, 다시 한번 해 봐요. 정답을 먼저 듣고 따라 말해 보세요.","천천히 한 단어씩 말해 봐도 좋아요. '정답 듣기'를 눌러 보세요."];
+/* ---- 4단계 상태 ----
+   SP.st : "ready"(카드를 누르면 듣기) | "listen"(듣는 중) | "result"(채점 결과 표시)
+   MIC   : "off" | "starting"(start 호출, 허용 대기) | "on"(듣는 중인 세션 있음)
+   원칙  : 마이크 세션은 사용자가 누른 순간(카드, 다음, 건너뛰기, 시작)에만 새로 켠다.
+           세션이 저절로 꺼져도 자동으로 다시 켜지 않는다(파일로 열면 켤 때마다 허용 창이 뜨기 때문). */
+var MIC="off",RL=0,SILT=null,NOST=null,PASS=0.8,MAXTRY=3;
+function clearT(){clearTimeout(SILT);clearTimeout(NOST);SILT=NOST=null;}
+function spItem(){return SP.list[SP.order[SP.pos]];}
+function spRender(){if(SP&&S.view==="speak")renderSpeak($("#app"));}
+function startSpeak(){
+  if(P.playing)stopAll();
+  var D=DATA[S.day-1],list=[];
+  D.p.forEach(function(q){list.push({r:"A",en:q[0],ko:q[1]});list.push({r:"B",en:q[2],ko:q[3]});});
+  SP={list:list,order:list.map(function(x,i){return i;}),pos:0,res:{},st:"ready",heard:"",interim:"",hint:false,ev:null,fin:false,base:0,mute:false,tries:0,banner:"",notice:""};
+  S.view="speak";render();window.scrollTo(0,0);
+  if(SR){micEnsure();listenNow();}
+}
+function recStop(){
+  clearT();
+  if(REC){var r=REC;REC=null;r.onresult=r.onerror=r.onend=r.onstart=r.onaudiostart=null;try{r.abort();}catch(e){}}
+  MIC="off";RL=0;
+}
+function micOn(){if(MIC!=="on"){MIC="on";if(SP&&SP.st==="listen"){armWatch();spRender();}}}
+/* 사용자가 누른 처리 안에서만 호출 */
+function micEnsure(){
+  if(!SR||REC)return;
+  var r=new SR();REC=r;MIC="starting";RL=0;
+  r.lang="en-US";r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+  r.onstart=function(){if(REC===r)micOn();};
+  r.onaudiostart=function(){if(REC===r)micOn();};
+  r.onresult=function(e){
+    if(REC!==r)return;
+    RL=e.results.length;
+    if(MIC!=="on")micOn();
+    if(!SP||SP.mute||SP.st!=="listen")return;
+    var t=currentText(e);if(!t)return;
+    SP.interim=t;var node=$("#interim");if(node)node.textContent=t;
+    clearTimeout(NOST);clearTimeout(SILT);
+    SILT=setTimeout(function(){if(SP&&SP.st==="listen"&&SP.interim)finishListen(SP.interim);},1800);
+  };
+  r.onerror=function(e){
+    if(REC!==r||!SP)return;
+    var c=e.error||"";
+    if(c==="not-allowed"||c==="service-not-allowed")SP.banner="blocked";
+    else if(c==="audio-capture")SP.banner="nomic";
+    else if(c==="network")SP.banner="network";
+    else if(c!=="no-speech"&&c!=="aborted")SP.notice="마이크 오류("+c+"). 카드를 눌러 다시 시도하세요.";
+    else if(c==="aborted"&&location.protocol==="file:")SP.notice="마이크 연결이 중단됐어요. 파일로 열면 허용이 유지되지 않아요. 아래 방법(localhost)으로 열어 보세요.";
+  };
+  r.onend=function(){
+    if(REC!==r)return;
+    REC=null;MIC="off";RL=0;clearTimeout(NOST);
+    if(!SP)return;
+    if(SP.st==="listen"){
+      if(SP.interim){finishListen(SP.interim);return;}
+      clearT();SP.st="ready";
+      if(!SP.banner)SP.notice="마이크가 꺼졌어요. 카드를 누르면 다시 켜져요.";
+    }
+    spRender();
+  };
+  try{r.start();}catch(e){REC=null;MIC="off";}
+}
+function currentText(e){var t="";for(var i=SP.base;i<e.results.length;i++)t+=e.results[i][0].transcript+" ";return t.trim();}
+function armWatch(){
+  clearTimeout(NOST);
+  NOST=setTimeout(function(){
+    if(!SP||SP.st!=="listen"||SP.interim)return;
+    clearT();SP.st="ready";SP.notice="소리가 들리지 않았어요. 카드를 누르고 다시 말해 보세요.";spRender();
+  },10000);
+}
+/* 현재 문장을 듣기 시작 (세션이 이미 있을 때만 실제로 듣는다) */
+function listenNow(){
+  clearT();stopSpeech();
+  SP.interim="";SP.heard="";SP.notice="";
+  if(!REC){SP.st="ready";spRender();return;}
+  SP.st="listen";SP.base=RL;SP.banner="";
+  spRender();
+  if(MIC==="on")armWatch();
+}
+function finishListen(text){
+  clearT();S.st.micUsed=true;save();
+  var it=spItem();SP.heard=text;SP.ev=evaluate(it.en,text);SP.res[SP.order[SP.pos]]=SP.ev.score;
+  SP.st="result";SP.notice="";SP.base=RL;
+  if(SP.ev.score<PASS&&REC&&SP.tries<MAXTRY){SP.tries++;SP.notice="점수가 "+Math.round(SP.ev.score*100)+"점이에요. 곧 다시 듣기 시작해요 ("+SP.tries+"/"+MAXTRY+")";spRender();autoRetry();return;}
+  spRender();
+}
+/* 기준 점수 미만이면 카드를 누르지 않아도 "다시 해보세요" 후 자동으로 다시 듣는다 */
+function autoRetry(){
+  var me=SP,pos=SP.pos;
+  me.mute=true;
+  sleep(2500).then(function(){
+    if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak"){me.mute=false;return;}
+    return (V.ko&&S.st.koVoice?speak("다시 해보세요","ko-KR","A"):sleep(800)).then(function(){return sleep(300);}).then(function(){
+      me.mute=false;
+      if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak")return;
+      listenNow();SP.notice="다시 해보세요! 영어로 말해 보세요.";spRender();
+    });
+  });
+}
+/* 다음 문장으로 (사용자가 누른 처리) */
+function spNext(){
+  clearT();stopSpeech();
+  SP.pos++;SP.tries=0;SP.mute=false;SP.st="ready";SP.heard="";SP.ev=null;SP.hint=false;SP.notice="";SP.interim="";
+  if(SP.pos>=SP.order.length){SP.fin=true;var d=S.done[S.day]||(S.done[S.day]={});d[4]=true;save();spRender();window.scrollTo(0,0);return;}
+  window.scrollTo(0,0);
+  if(SR){micEnsure();listenNow();}else spRender();
+}
+function micLabel(){
+  return MIC==="on"?"마이크 켜짐":MIC==="starting"?"마이크 켜는 중":"마이크 꺼짐";
+}
+function renderSpeak(app){
+  app.classList.remove("playing");
+  var h="";
+  var topbar=function(label){return '<div class="top"><div><button class="btn small" id="sp-back">← 돌아가기</button><h1 style="margin-top:12px">Day '+S.day+' · 직접 말하기</h1><p class="sub">'+label+'</p></div></div>';};
+  if(SP.fin){
+    var sc=0,cnt=0,weak=[];
+    SP.list.forEach(function(it,i){var v=SP.res[i];if(typeof v==="number"){sc+=v;cnt++;if(v<0.8)weak.push(i);}else weak.push(i);});
+    var avg=cnt?Math.round(sc/cnt*100):0;
+    h+=topbar("10문장 마무리")+'<div class="res"><div class="fb '+(avg>=80?"good":avg>=50?"mid":"low")+'">평균 '+avg+'점 · '+(avg>=80?"오늘 정말 잘했어요!":avg>=50?"좋은 연습이었어요. 한 번 더 하면 더 좋아져요.":"시작이 반이에요. 내일 또 만나요.")+'</div>';
+    SP.list.forEach(function(it,i){var v=SP.res[i];h+='<div class="sumrow"><b class="badge '+it.r+'" style="padding:1px 8px;border-radius:999px;font-size:.75rem">'+it.r+'</b><span class="en">'+esc(it.en)+'</span><span>'+(typeof v==="number"?Math.round(v*100)+"점":"건너뜀")+'</span></div>';});
+    h+='<div class="row">'+(weak.length?'<button class="btn" id="sp-redo">약한 문장 '+weak.length+'개 다시 연습</button>':'')+'<button class="btn primary" id="sp-done">완료하고 목록으로</button></div></div>';
+    app.innerHTML=h;
+    if($("#sp-redo"))$("#sp-redo").onclick=function(){SP.order=weak;SP.pos=0;SP.tries=0;SP.fin=false;SP.ev=null;SP.hint=false;micEnsure();listenNow();};
+    $("#sp-done").onclick=function(){recStop();S.view="home";SP=null;render();window.scrollTo(0,0);};
+    $("#sp-back").onclick=function(){recStop();S.view="day";SP=null;render();};
+    return;
+  }
+  var it=spItem();
+  h+=topbar("문장 "+(SP.pos+1)+" / "+SP.order.length+" · "+micLabel());
+  h+='<div class="progress"><i style="width:'+(SP.pos/SP.order.length*100)+'%"></i></div>';
+  if(!SR){
+    h+='<div class="warn">이 브라우저에서는 음성 인식을 쓸 수 없어요. 컴퓨터나 안드로이드의 크롬 또는 엣지에서 앱 파일을 열어 주세요.</div>';
+  }else if(SP.banner==="blocked"){
+    h+='<div class="warn">마이크 사용이 거부되었어요. 링크 화면에서는 마이크를 쓸 수 없으니 내려받은 <b>영어회화앱.html</b> 파일을 크롬이나 엣지에서 여세요. 파일로 열었다면 주소창 왼쪽의 아이콘을 눌러 마이크를 허용한 뒤 카드를 누르세요.</div>';
+  }else if(SP.banner==="nomic"){
+    h+='<div class="warn">마이크를 찾지 못했어요. 마이크가 연결되어 있는지 확인하고 카드를 누르세요.</div>';
+  }else if(SP.banner==="network"){
+    h+='<div class="warn">음성 인식에는 인터넷 연결이 필요해요. 연결을 확인하고 카드를 누르세요.</div>';
+  }
+  var on=SP.st==="listen";
+  var cue;
+  if(on)cue=MIC==="starting"?"마이크 허용 창이 뜨면 '사이트에 있는 동안 허용'을 눌러 주세요.":"듣고 있어요. 영어로 말해 보세요.";
+  else if(SP.st==="result")cue="다시 말하려면 카드를 누르세요. 다음 문장은 '다음'을 누르세요.";
+  else cue="카드를 누르고 영어로 말해 보세요.";
+  h+='<button class="speakcard'+(on?" on listen":"")+'" id="sp-card" aria-label="눌러서 영어로 말하기"><span class="badge '+it.r+'" style="justify-self:start">'+it.r+' 역할</span>'+
+     '<span class="big">'+esc(it.ko)+'</span>'+
+     '<span class="cue"><i class="mic"></i>'+cue+'</span>'+(on?'<span id="interim" class="heard">'+esc(SP.interim)+'</span>':'')+
+     '</button>';
+  if(SP.notice)h+='<p class="note">'+esc(SP.notice)+'</p>';
+  if(SP.hint)h+='<div class="res"><h3>영어 문장 (힌트)</h3><div class="heard" style="font-family:var(--font-en)">'+esc(it.en)+'</div></div>';
+  if(SP.st==="result"&&SP.ev){
+    var ev=SP.ev,pct=Math.round(ev.score*100),cls=pct>=80?"good":pct>=50?"mid":"low";
+    var msgs=pct>=80?PRAISE:pct>=50?MID:LOW,msg=msgs[(SP.pos+SP.order[SP.pos])%msgs.length];
+    var hearWords=words(SP.heard).map(function(w){var k=hg(w);return k||w;}).join(" ");
+    var missed=ev.words.filter(function(w,i){return !ev.ok[i];});
+    h+='<div class="res"><div class="fb '+cls+'">'+pct+'점 · '+msg+'</div>'+
+       '<div><h3>내가 말한 소리 (한글)</h3><div class="heard">'+esc(hearWords)+'</div></div>'+
+       '<div><h3>정답 발음 (초록: 잘 들림 · 주황: 다시 연습)</h3><div class="chips">';
+    ev.words.forEach(function(w,i){h+='<span class="chip '+(ev.ok[i]?"ok":"miss")+'"><b>'+esc(w)+'</b><small>'+esc(hg(w)||"")+'</small></span>';});
+    h+='</div></div>';
+    if(missed.length)h+='<div class="tip">'+esc(tipFor(missed))+'</div>';
+    h+='</div>';
+  }
+  h+='<div class="row"><button class="btn" id="sp-hint">'+(SP.hint?"힌트 숨기기":"힌트 보기")+'</button><button class="btn" id="sp-hear">정답 듣기</button><button class="btn" id="sp-skip">건너뛰기</button>'+
+     (SP.st==="result"?'<button class="btn primary" id="sp-next">'+(SP.pos+1>=SP.order.length?"마무리":"다음")+'</button>':'')+'</div>';
+  app.innerHTML=h;
+  $("#sp-back").onclick=function(){recStop();stopSpeech();S.view="day";SP=null;render();};
+  $("#sp-card").onclick=function(){if(SP.st==="listen")return;SP.mute=false;micEnsure();listenNow();};
+  $("#sp-hint").onclick=function(){SP.hint=!SP.hint;spRender();};
+  $("#sp-hear").onclick=function(){
+    var was=SP.st==="listen";
+    if(was){clearT();SP.st="ready";SP.interim="";}
+    SP.mute=true;stopSpeech();spRender();
+    speak(it.en,"en-US",it.r).then(function(){setTimeout(function(){
+      if(!SP)return;SP.mute=false;SP.base=RL;
+      if(was&&S.view==="speak"&&!SP.fin)listenNow();
+    },500);});
+  };
+  $("#sp-skip").onclick=function(){SP.res[SP.order[SP.pos]]=null;spNext();};
+  if($("#sp-next"))$("#sp-next").onclick=spNext;
+}
+
+load();
+if(S.day<1||S.day>DATA.length)S.day=1;
+S.block=Math.floor((S.day-1)/15);
+render();
+})();
+</script>
+
+</body>
+</html>

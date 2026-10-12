@@ -1,0 +1,90 @@
+## 함께 요리하기|Cooking Together
+Can you help me chop the onions?|양파 써는 것 좀 도와줄래?|Sure. How thin should I cut them?|그럼. 얼마나 얇게 썰까?
+Is the oven preheated?|오븐 예열됐어?|Not yet. It needs five more minutes.|아직. 5분 더 필요해.
+Taste the sauce, please.|소스 간 좀 봐 줘.|It needs a little more salt.|소금이 조금 더 필요해.
+Watch out, the pan is hot!|조심해, 팬이 뜨거워!|Thanks. I'll use oven mitts.|고마워. 오븐 장갑 낄게.
+How long should it simmer?|얼마나 끓여야 해?|About twenty minutes on low heat.|약한 불에서 20분 정도.
+## 냉장고 정리|Organizing the Fridge
+The fridge is so full.|냉장고가 너무 꽉 찼어.|Let's throw away the old food.|오래된 음식은 버리자.
+Is this milk still good?|이 우유 아직 괜찮아?|Check the expiration date.|유통기한을 확인해 봐.
+Where should I put the leftovers?|남은 음식은 어디에 둘까?|On the second shelf, in a container.|두 번째 칸에 용기에 담아서.
+We should keep the vegetables fresh.|채소를 신선하게 보관해야 해.|Put them in the bottom drawer.|맨 아래 서랍에 넣어.
+Please close the fridge door.|냉장고 문 좀 닫아 줘.|Oops, I'm sorry.|어머, 미안해.
+## 옷 개기와 다림질|Ironing and Folding
+These shirts are wrinkled.|이 셔츠들 구겨졌어.|I'll iron them for you.|내가 다려 줄게.
+Is the iron hot enough?|다리미 충분히 뜨거워?|Wait for the light to turn off.|불이 꺼질 때까지 기다려.
+Where do I put these socks?|이 양말은 어디에 둬?|In the second drawer, please.|두 번째 서랍에 넣어 줘.
+Could you hang up my coat?|내 코트 좀 걸어 줄래?|Sure. It goes in the closet.|응. 옷장에 걸게.
+My shirt has a stain on it.|셔츠에 얼룩이 있어.|Let me try to get it out.|내가 지워 볼게.
+## 욕실 청소|Cleaning the Bathroom
+The bathroom needs cleaning.|욕실 청소가 필요해.|I'll scrub the tub.|욕조는 내가 문지를게.
+Where's the toilet cleaner?|변기 세정제 어디 있어?|Under the sink.|싱크대 아래에 있어.
+Please wipe the mirror.|거울 좀 닦아 줘.|Okay. It's covered in spots.|응. 얼룩이 잔뜩이네.
+Don't forget to hang the towels.|수건 걸어 두는 거 잊지 마.|I'll put out fresh ones.|새 수건으로 걸어 둘게.
+The drain is clogged again.|배수구가 또 막혔어.|I'll call a plumber if needed.|필요하면 배관공을 부를게.
+## 집 고장과 수리|Fixing Things
+The light bulb has burned out.|전구가 나갔어.|I'll replace it with a new one.|새것으로 갈아 끼울게.
+The faucet is leaking.|수도꼭지에서 물이 새.|Can you tighten it with a wrench?|렌치로 조여 줄래?
+The Wi-Fi isn't working.|와이파이가 안 돼.|Let me restart the router.|공유기를 다시 켜 볼게.
+Do you have a screwdriver?|드라이버 있어?|Yes, it's in the toolbox.|응, 공구함에 있어.
+We should call someone to fix it.|누군가를 불러서 고치자.|I'll look for a repairman.|수리 기사를 찾아볼게.
+## 아이와 숙제|Helping with Homework
+Have you finished your homework?|숙제 다 했니?|Not yet. I need some help.|아직요. 도움이 필요해요.
+Let's check your answers together.|같이 답을 확인해 보자.|Okay. Is this one correct?|좋아요. 이건 맞아요?
+Try reading the question again.|문제를 다시 읽어 봐.|Oh, now I understand.|아, 이제 이해했어요.
+Take a short break if you're tired.|피곤하면 잠깐 쉬어도 돼.|Can I have a snack?|간식 먹어도 돼요?
+Great job! You worked hard.|잘했어! 열심히 했구나.|Thanks, Mom. Can I play now?|고마워요, 엄마. 이제 놀아도 돼요?
+## 아이에게 예절 가르치기|Teaching Manners
+What do we say when someone helps us?|누가 도와주면 뭐라고 하지?|Thank you.|고맙습니다.
+Please say sorry to your sister.|동생한테 미안하다고 말해.|I'm sorry for taking your toy.|네 장난감 가져가서 미안해.
+Remember to say please.|부탁할 때는 '제발'을 붙이는 거 기억해.|Can I have some water, please?|물 좀 주시겠어요?
+We should share with others.|다른 사람과 나눠야 해.|Do you want to play with my blocks?|내 블록으로 같이 놀래?
+Don't interrupt when others are talking.|다른 사람이 말할 때 끼어들지 마.|Okay. I'll wait for my turn.|알겠어요. 내 차례를 기다릴게요.
+## 아이 식사 지도|Teaching Kids to Eat Well
+Please try a bite of the broccoli.|브로콜리 한 입만 먹어 봐.|It doesn't look tasty.|맛없어 보여요.
+You need to eat your vegetables.|채소를 먹어야 해.|Can I eat them after the meat?|고기 먹고 먹어도 돼요?
+Use your spoon, not your hands.|손 말고 숟가락을 써.|It's hard to use.|쓰기 어려워요.
+Don't play with your food.|음식 가지고 장난치지 마.|Sorry. I'll eat properly.|죄송해요. 제대로 먹을게요.
+You can leave the table when you're done.|다 먹으면 자리에서 일어나도 돼.|May I be excused, please?|일어나도 될까요?
+## 부모님과 통화|Calling Parents
+Hello, Mom! How are you?|엄마, 안녕하세요! 잘 지내세요?|I'm fine, dear. How are the kids?|난 잘 지낸단다. 아이들은 어떠니?
+Have you eaten lunch yet?|점심 드셨어요?|Yes, I had noodles.|그래, 국수 먹었어.
+Please take care of your health.|건강 잘 챙기세요.|Don't worry about me.|내 걱정은 하지 마.
+We'll visit you this weekend.|이번 주말에 찾아뵐게요.|That would be wonderful!|그럼 정말 좋지!
+I miss you a lot.|많이 보고 싶어요.|I miss you too. Call me again soon.|나도 보고 싶구나. 곧 또 전화하렴.
+## 손님 맞이|Welcoming Guests
+Welcome! Please come in.|어서 오세요! 들어오세요.|Thank you for inviting us.|초대해 주셔서 감사합니다.
+Let me take your coat.|코트 받아 드릴게요.|Thank you. That's very kind.|고맙습니다. 친절하시네요.
+Please make yourself at home.|편하게 계세요.|What a lovely house you have!|집이 정말 멋지네요!
+Here is a small gift for you.|작은 선물을 드릴게요.|Oh, you shouldn't have!|어머, 이러지 않으셔도 되는데!
+Please have a seat.|앉으세요.|Thank you. This sofa is comfortable.|감사합니다. 이 소파 편안하네요.
+## 손님 식사 대접|Hosting a Dinner
+Would you like something to drink?|마실 것 좀 드릴까요?|Water would be fine, thanks.|물이면 좋아요, 감사합니다.
+Please try some of this dish.|이 요리 좀 드셔 보세요.|It's delicious. What's in it?|맛있네요. 뭐가 들어갔어요?
+Would you like a second helping?|더 드시겠어요?|Yes, just a little, please.|네, 조금만 더 주세요.
+I hope you saved room for dessert.|디저트 먹을 자리 남겨 두셨기를 바라요.|Of course! It looks amazing.|물론이죠! 정말 맛있어 보여요.
+Is there anything you can't eat?|못 드시는 음식 있으세요?|I'm allergic to peanuts.|저는 땅콩 알레르기가 있어요.
+## 손님 배웅|Seeing Guests Off
+Thank you for coming tonight.|오늘 와 주셔서 감사해요.|We had a wonderful time.|정말 즐거운 시간이었어요.
+Please come again soon.|곧 또 오세요.|We will. You should visit us too.|그럴게요. 당신도 저희 집에 오세요.
+Drive safely on your way home.|집에 안전하게 운전해서 가세요.|Thanks. We'll text you when we arrive.|고마워요. 도착하면 문자할게요.
+It's getting late.|시간이 늦어졌네요.|Yes, we should be going.|네, 이제 가 봐야겠어요.
+Let me walk you to the door.|문까지 배웅해 드릴게요.|Thank you. Good night!|감사합니다. 안녕히 주무세요!
+## 이웃과 층간소음|Neighbors and Noise
+Hello, I live upstairs.|안녕하세요, 위층에 살아요.|Oh, nice to meet you.|아, 만나서 반가워요.
+I'm sorry if we were noisy last night.|어젯밤에 시끄러웠다면 죄송해요.|No problem, but it was a bit loud.|괜찮지만 조금 시끄럽긴 했어요.
+We'll try to keep it down.|조용히 하도록 노력할게요.|Thank you. I appreciate it.|고마워요. 감사합니다.
+Please wear slippers inside.|실내에서는 슬리퍼를 신어 주세요.|Okay. I'll tell the kids.|네. 아이들에게 말해 둘게요.
+Would you like some rice cakes?|떡 좀 드시겠어요?|That's very thoughtful of you.|정말 배려 깊으시네요.
+## 반려동물|Pets at Home
+Did you feed the dog?|강아지 밥 줬어?|Yes, and I gave him water.|응, 물도 줬어.
+It's time to take him for a walk.|산책시킬 시간이야.|I'll get the leash.|목줄 가져올게.
+Don't let him on the sofa.|소파에 못 올라가게 해.|He's just trying to cuddle.|그냥 안기고 싶어서 그래.
+The cat scratched the curtain.|고양이가 커튼을 긁었어.|I'll buy a scratching post.|스크래처를 사 줘야겠다.
+We need to see the vet next week.|다음 주에 수의사한테 가야 해.|I'll make an appointment.|내가 예약할게.
+## 생활비와 공과금|Household Bills
+The electricity bill came today.|오늘 전기요금 고지서가 왔어.|How much is it this month?|이번 달은 얼마야?
+It's higher than usual.|평소보다 많이 나왔어.|We should turn off lights more often.|불을 더 자주 꺼야겠다.
+Did you pay the rent?|월세 냈어?|Yes, I transferred it this morning.|응, 오늘 아침에 이체했어.
+Let's check our monthly budget.|이번 달 예산을 확인해 보자.|We spent too much on eating out.|외식에 너무 많이 썼어.
+We need to save more money.|돈을 더 모아야 해.|Let's cook at home more often.|집에서 더 자주 요리하자.

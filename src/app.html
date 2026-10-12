@@ -1,0 +1,638 @@
+<title>집에서 영어 회화</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: day picker home -> day view with 3 stage buttons, script list, and a fixed bottom player sheet. */
+:root{
+  --bg:#EFF3F0; --surface:#FFFFFF; --ink:#16231E; --muted:#56675F; --line:#D3DCD7;
+  --a:#2B58D1; --a-soft:#E3EAFB; --b:#A94F14; --b-soft:#F8E8DB;
+  --accent:#1B7556; --on-accent:#FFFFFF; --accent-soft:#DDF0E8;
+  --font-ui:"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-en:"Newsreader",Georgia,"Times New Roman",serif;
+  --shadow:0 -6px 24px rgba(20,40,32,.12);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1613; --surface:#18221E; --ink:#E7EFEB; --muted:#9BAEA6; --line:#2A3832;
+  --a:#8FAAFF; --a-soft:#1C2646; --b:#F2A56B; --b-soft:#3A2517;
+  --accent:#4DC59A; --on-accent:#06140E; --accent-soft:#17352B; --shadow:0 -6px 24px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1613; --surface:#18221E; --ink:#E7EFEB; --muted:#9BAEA6; --line:#2A3832;
+  --a:#8FAAFF; --a-soft:#1C2646; --b:#F2A56B; --b-soft:#3A2517;
+  --accent:#4DC59A; --on-accent:#06140E; --accent-soft:#17352B; --shadow:0 -6px 24px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;padding-inline:16px}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 40px}
+.wrap.playing{padding-bottom:300px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1{font-size:1.5rem;line-height:1.25;margin:0;text-wrap:balance}
+h2{font-size:1.15rem;margin:0;text-wrap:balance}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.sub{color:var(--muted);font-size:.9rem;margin:4px 0 0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-weight:500}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700}
+.btn.small{padding:6px 10px;font-size:.85rem}
+.progress{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin:10px 0 16px}
+.progress>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.tab{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.88rem}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.day{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;min-width:0}
+.day b{font-size:.78rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between}
+.day span{font-size:.92rem;font-weight:500;overflow-wrap:anywhere}
+.day.done{border-color:var(--accent);background:var(--accent-soft)}
+.day.done b{color:var(--accent)}
+.stages{display:grid;gap:10px;margin:14px 0}
+.stage{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px}
+.stage small{color:var(--muted);grid-column:1}
+.stage .tag{grid-row:1/3;grid-column:2;font-size:.78rem;border-radius:999px;padding:3px 10px;background:var(--line);color:var(--muted)}
+.stage.done .tag{background:var(--accent);color:var(--on-accent)}
+.script{display:grid;gap:2px;margin-top:10px}
+.pair{display:grid;gap:2px;padding-block:3px;border-bottom:1px solid var(--line)}
+.pair:last-child{border-bottom:0}
+.line{display:flex;align-items:baseline;gap:8px;max-width:100%;border-radius:6px;padding:2px 6px;text-align:left;border:0;background:none;min-width:0;width:100%}
+.line .who{flex:none;width:1.1em;font-size:.82rem;font-weight:700}
+.line.A .who{color:var(--a)} .line.B .who{color:var(--b)}
+.line .en{font-family:var(--font-en);font-size:1rem;line-height:1.35;font-weight:500;overflow-wrap:anywhere}
+.line.A .en{color:var(--ink)} .line.B .en{color:var(--ink)}
+.line.on{background:var(--accent-soft)}
+details.set{margin-top:18px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px}
+details.set summary{cursor:pointer;font-weight:700}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.grid2 label{display:grid;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;max-width:100%}
+.chk{display:flex!important;grid-auto-flow:column;align-items:center;gap:8px;color:var(--ink)!important}
+.note{font-size:.82rem;color:var(--muted);margin:10px 0 0}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--shadow);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:5}
+.sheet-in{max-width:720px;margin:0 auto;display:grid;gap:10px}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--muted)}
+.now{min-height:92px;display:grid;gap:4px;align-content:center}
+.now .badge{justify-self:start;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:999px}
+.badge.A{background:var(--a-soft);color:var(--a)} .badge.B{background:var(--b-soft);color:var(--b)} .badge.you{background:var(--accent);color:var(--on-accent)}
+.now .en{font-family:var(--font-en);font-size:1.35rem;line-height:1.3;font-weight:600;overflow-wrap:anywhere}
+.now .ko{font-size:1rem;overflow-wrap:anywhere}
+.bar{height:10px;border-radius:10px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);width:0}
+.ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ctl .btn{min-width:64px}
+.pill{font-variant-numeric:tabular-nums}
+.speakcard{display:grid;gap:8px;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:16px;padding:18px;min-height:150px;align-content:center}
+.speakcard:hover{border-color:var(--accent)}
+.speakcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.speakcard .big{font-size:1.4rem;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.speakcard .cue{color:var(--muted);font-size:.9rem}
+.mic{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle}
+.listen .mic{animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(27,117,86,.5)}100%{box-shadow:0 0 0 14px rgba(27,117,86,0)}}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.res{display:grid;gap:12px;margin-top:14px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px}
+.res h3{margin:0;font-size:.82rem;color:var(--muted);letter-spacing:.04em}
+.fb{font-size:1.05rem;font-weight:700}
+.fb.good{color:var(--accent)} .fb.mid{color:var(--b)} .fb.low{color:var(--a)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:grid;text-align:center;border-radius:10px;padding:4px 8px;border:1px solid var(--line);min-width:0}
+.chip b{font-family:var(--font-en);font-size:1rem;font-weight:500}
+.chip small{font-size:.78rem;color:var(--muted)}
+.chip.ok{background:var(--accent-soft);border-color:var(--accent)}
+.chip.miss{background:var(--b-soft);border-color:var(--b)}
+.heard{font-size:1.15rem;font-weight:500;overflow-wrap:anywhere}
+.tip{font-size:.92rem;background:var(--b-soft);border-radius:10px;padding:8px 12px}
+.sumrow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.sumrow .en{font-family:var(--font-en);overflow-wrap:anywhere}
+.warn{background:var(--b-soft);border-radius:10px;padding:10px 12px;font-size:.9rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+<div class="sheet" id="sheet" hidden></div>
+
+<script>
+/*DATA*/
+/*HG*/
+(function(){
+"use strict";
+var synth = window.speechSynthesis;
+var STAGES = [
+  {id:1,name:"1단계 · 듣기",desc:"전체 대화를 3번 듣기 · 처음은 천천히, 다음 2번은 보통 속도"},
+  {id:2,name:"2단계 · 대화 듣기",desc:"A가 묻고, 대답할 시간을 준 뒤 B가 대답 (전체 2번, 해석 없음)"},
+  {id:3,name:"3단계 · 한글 보고 말하기",desc:"A용, B용 한글을 보고 영어로 말하기 (각각 2번)"},
+  {id:4,name:"4단계 · 직접 말하기 (마이크)",desc:"해석을 누르고 영어로 말하면 발음을 한글로 보여주고 피드백해 줘요"}
+];
+var S = {day:1,block:0,view:"home",done:{},st:{delay:1,rate:0.9,en:true,ko:true,koVoice:true,vA:"",vB:"",auto:true}};
+var V = {a:null,b:null,ko:null,sep:false,en:[]};
+var P = {steps:[],i:0,tok:0,paused:false,playing:false,stage:0};
+
+function load(){try{var r=localStorage.getItem("hs-v1");if(r){var o=JSON.parse(r);if(o.done)S.done=o.done;if(o.st)Object.assign(S.st,o.st);if(o.day)S.day=o.day;}}catch(e){}}
+function save(){try{localStorage.setItem("hs-v1",JSON.stringify({done:S.done,st:S.st,day:S.day}));}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function $(s){return document.querySelector(s);}
+function dayDone(n){var d=S.done[n]||{};return !!(d[1]&&d[2]&&d[3]&&(d[4]||!S.st.micUsed));}
+function doneCount(){var c=0;for(var i=1;i<=DATA.length;i++)if(dayDone(i))c++;return c;}
+
+/* ---------- voices ---------- */
+function pickVoices(){
+  if(!synth)return;
+  var all=synth.getVoices()||[];
+  var en=all.filter(function(v){return /^en/i.test(v.lang);});
+  en.sort(function(a,b){return (/en[-_]US/i.test(b.lang)?1:0)-(/en[-_]US/i.test(a.lang)?1:0);});
+  V.en=en;
+  var fem=/samantha|zira|jenny|aria|female|karen|victoria|susan|google us english|allison|ava|joanna|serena|moira|tessa/i;
+  var mal=/david|daniel|alex|mark|guy|male|fred|tom|george|james|ryan|aaron|arthur/i;
+  var byName=function(n){return en.filter(function(v){return v.name===n;})[0];};
+  V.a=byName(S.st.vA)||en.filter(function(v){return fem.test(v.name);})[0]||en[0]||null;
+  V.b=byName(S.st.vB)||en.filter(function(v){return mal.test(v.name)&&v!==V.a;})[0]||en.filter(function(v){return v!==V.a;})[0]||en[0]||null;
+  V.sep=!!(V.a&&V.b&&V.a!==V.b);
+  V.ko=all.filter(function(v){return /^ko/i.test(v.lang);})[0]||null;
+}
+if(synth){pickVoices();synth.onvoiceschanged=function(){pickVoices();if(S.view==="day"&&!P.playing)render();};}
+
+function speak(text,lang,role,rate){
+  return new Promise(function(res){
+    if(!synth){setTimeout(res,600);return;}
+    var u=new SpeechSynthesisUtterance(text),done=false,t;
+    var ko=lang==="ko-KR";
+    u.lang=lang;u.rate=ko?1:(rate||S.st.rate);
+    var v=ko?V.ko:(role==="A"?V.a:V.b);if(v)u.voice=v;
+    if(!ko&&!V.sep)u.pitch=role==="A"?1.2:0.8;
+    function fin(){if(!done){done=true;clearTimeout(t);res();}}
+    u.onend=fin;u.onerror=fin;
+    t=setTimeout(fin,3500+text.length*130/u.rate);
+    synth.speak(u);
+  });
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+/* ---------- steps ---------- */
+function wordCount(s){return s.split(/\s+/).length;}
+function delayFor(en){var d=2.5+wordCount(en)*0.35;d=Math.max(4,Math.min(7,d));return Math.round(d*S.st.delay*10)/10;}
+function buildSteps(day,stage){
+  var p=DATA[day-1].p,out=[];
+  function say(lang,role,text,pair,extra){out.push(Object.assign({t:"say",lang:lang,role:role,text:text,pair:pair,stage:stage},extra||{}));}
+  function wait(sec,kind,pair,extra){out.push(Object.assign({t:"wait",sec:sec,kind:kind,pair:pair,stage:stage},extra||{}));}
+  var k,r,w;
+  if(stage===1){
+    for(r=1;r<=3;r++){
+      p.forEach(function(q,i){
+        [["A",q[0],q[1]],["B",q[2],q[3]]].forEach(function(l){
+          say("en-US",l[0],l[1],i,{ko:l[2],round:r,rounds:3,slow:r===1});
+          wait(r===1?1.8:1.2,"gap",i,{round:r,rounds:3});
+        });
+      });
+      if(r<3)wait(2.5,"gap",0,{round:r,rounds:3});
+    }
+  }else if(stage===2){
+    for(r=1;r<=2;r++)p.forEach(function(q,i){
+      say("en-US","A",q[0],i,{ko:q[1],round:r,rounds:2});
+      wait(delayFor(q[2]),"answer",i,{round:r,rounds:2});
+      say("en-US","B",q[2],i,{ko:q[3],round:r,rounds:2});
+      wait(1.6,"gap",i,{round:r,rounds:2});
+    });
+  }else{
+    ["A","B"].forEach(function(who){
+      for(r=1;r<=2;r++)p.forEach(function(q,i){
+        var en=who==="A"?q[0]:q[2],ko=who==="A"?q[1]:q[3];
+        if(S.st.koVoice&&V.ko||!synth)say("ko-KR",who,ko,i,{ko:ko,hideEn:true,round:r,rounds:2,who:who});
+        else out.push({t:"show",role:who,pair:i,ko:ko,hideEn:true,stage:stage,round:r,rounds:2,who:who});
+        wait(delayFor(en),"speak",i,{ko:ko,hideEn:true,round:r,rounds:2,who:who,role:who});
+        say("en-US",who,en,i,{ko:ko,round:r,rounds:2,who:who});
+        wait(1.4,"gap",i,{round:r,rounds:2,who:who,ko:ko});
+      });
+    });
+  }
+  return out;
+}
+
+/* ---------- player ---------- */
+function stageLabel(st){
+  var base=STAGES[st.stage-1].name;
+  if(st.stage===3&&st.who)base+=" · "+st.who+"용";
+  if(st.rounds)base+=" · "+st.round+"/"+st.rounds+"회"+(st.slow?" (천천히)":"");
+  return base;
+}
+function stopSpeech(){if(synth)synth.cancel();}
+function startFrom(i){
+  P.tok++;var tok=P.tok;stopSpeech();
+  P.i=Math.max(0,Math.min(i,P.steps.length-1));P.paused=false;P.playing=true;
+  render(true);run(tok);
+}
+async function run(tok){
+  for(;P.i<P.steps.length;P.i++){
+    if(tok!==P.tok)return;
+    var st=P.steps[P.i];
+    paintNow(st);
+    if(st.t==="say"){await speak(st.text,st.lang,st.role,st.slow?Math.max(0.5,S.st.rate*0.75):null);}
+    else if(st.t==="show"){await sleep(500);}
+    else{await countdown(st,tok);}
+    if(tok!==P.tok)return;
+    var nx=P.steps[P.i+1];
+    if(!nx||nx.stage!==st.stage)markStage(st.stage);
+  }
+  if(tok===P.tok)finish();
+}
+function countdown(st,tok){
+  return new Promise(function(res){
+    var t0=Date.now(),total=st.sec*1000;
+    (function tick(){
+      if(tok!==P.tok){res();return;}
+      var el=Date.now()-t0,left=Math.max(0,total-el);
+      var bar=$("#cd"),num=$("#cdn");
+      if(bar)bar.style.width=(st.kind==="gap"?0:(left/total*100))+"%";
+      if(num&&st.kind!=="gap")num.textContent=Math.ceil(left/1000)+"초";
+      if(left<=0){res();return;}
+      setTimeout(tick,100);
+    })();
+  });
+}
+function markStage(n){
+  var d=S.done[S.day]||(S.done[S.day]={});
+  if(!d[n]){d[n]=true;save();}
+  paintStages();
+}
+function finish(){P.playing=false;P.paused=false;P.steps=[];render();}
+function stopAll(){P.tok++;stopSpeech();P.playing=false;P.paused=false;P.steps=[];render();}
+function pauseToggle(){
+  if(!P.playing)return;
+  if(!P.paused){P.paused=true;P.tok++;stopSpeech();paintSheet();}
+  else{startFrom(P.i);}
+}
+function playStages(list){
+  var steps=[];list.forEach(function(s){steps=steps.concat(buildSteps(S.day,s));});
+  P.steps=steps;startFrom(0);
+}
+async function playOne(en,role){
+  if(P.playing)return;
+  P.tok++;stopSpeech();await speak(en,"en-US",role);
+}
+
+/* ---------- render ---------- */
+function paintNow(st){
+  var box=$("#now");if(!box)return;
+  var pr=$("#prog");if(pr)pr.style.width=(P.i/Math.max(1,P.steps.length)*100)+"%";
+  var meta=$("#meta");if(meta)meta.textContent=stageLabel(st);
+  var cnt=$("#cnt");if(cnt)cnt.textContent=(P.i+1)+" / "+P.steps.length;
+  if(st.t==="wait"&&st.kind==="gap"){return;}
+  var role=st.role||"A";
+  var enText=(st.t==="say"&&st.lang==="en-US")?st.text:"";
+  var koText=st.ko||"";
+  var html="";
+  if(st.t==="wait"&&st.kind!=="gap"){
+    var msg=st.kind==="answer"?"B가 되어 영어로 대답해 보세요":"지금 영어로 말해 보세요";
+    html='<span class="badge you">'+msg+'</span>';
+    if(st.kind==="speak"&&st.who)html='<span class="badge '+st.who+'">'+st.who+'용 · '+msg+'</span>';
+    if(st.kind==="speak")html+='<div class="ko">'+esc(koText)+'</div>';
+    html+='<div class="bar" aria-hidden="true"><i id="cd"></i></div><div class="pill" id="cdn" style="font-size:.9rem;color:var(--muted)"></div>';
+  }else if(st.t==="wait"){
+    html='<span class="badge '+(st.who||"A")+'" style="visibility:hidden">·</span><div class="ko" style="color:var(--muted)">…</div><i id="cd" hidden></i>';
+  }else if(st.t==="show"||(st.t==="say"&&st.lang==="ko-KR")){
+    html='<span class="badge '+(st.who||role)+'">'+(st.who||role)+'용 한글</span><div class="ko" style="font-size:1.25rem;font-weight:700">'+esc(koText)+'</div>';
+  }else{
+    html='<span class="badge '+role+'">'+role+(role==="A"?" · 묻기":" · 대답")+(st.slow?" · 천천히":"")+'</span>';
+    if(S.st.en||st.stage===3)html+='<div class="en">'+esc(enText)+'</div>';
+  }
+  box.innerHTML=html;
+  document.querySelectorAll(".line.on").forEach(function(n){n.classList.remove("on");});
+  var ln=document.querySelector('[data-pair="'+st.pair+'"]');
+  if(ln){ln.classList.add("on");}
+}
+function paintSheet(){
+  var sh=$("#sheet");
+  if(!P.playing){sh.hidden=true;return;}
+  sh.hidden=false;
+  sh.innerHTML='<div class="sheet-in"><div class="meta"><span id="meta"></span><span id="cnt" class="pill"></span></div>'+
+   '<div class="progress" style="margin:0"><i id="prog"></i></div>'+
+   '<div class="now" id="now" aria-live="polite"></div>'+
+   '<div class="ctl"><button class="btn" id="bprev" aria-label="이전">이전</button>'+
+   '<button class="btn primary" id="bpause">'+(P.paused?"계속":"일시정지")+'</button>'+
+   '<button class="btn" id="bnext" aria-label="다음">다음</button>'+
+   '<button class="btn" id="bstop">그만</button></div></div>';
+  $("#bprev").onclick=function(){var i=P.i-1;while(i>0&&P.steps[i].t!=="say"&&P.steps[i].t!=="show")i--;startFrom(Math.max(0,i));};
+  $("#bnext").onclick=function(){var i=P.i+1;while(i<P.steps.length-1&&P.steps[i].t==="wait")i++;if(i>=P.steps.length){stopAll();return;}startFrom(i);};
+  $("#bpause").onclick=pauseToggle;
+  $("#bstop").onclick=stopAll;
+  paintNow(P.steps[P.i]);
+}
+function paintStages(){
+  var d=S.done[S.day]||{};
+  document.querySelectorAll("[data-stage]").forEach(function(b){
+    var n=+b.getAttribute("data-stage");
+    b.classList.toggle("done",!!d[n]);
+    b.querySelector(".tag").textContent=d[n]?"완료":"미완료";
+  });
+}
+function render(keepSheet){
+  var app=$("#app");
+  app.classList.toggle("playing",P.playing);
+  if(S.view==="home")renderHome(app);else if(S.view==="speak")renderSpeak(app);else renderDay(app);
+  if(S.view!=="speak"&&(keepSheet||P.playing))paintSheet();else $("#sheet").hidden=true;
+}
+function renderHome(app){
+  var n=DATA.length,dc=doneCount(),next=1;
+  for(var i=1;i<=n;i++){if(!dayDone(i)){next=i;break;}}
+  var h='<div class="top"><div><h1>집에서 영어 회화</h1><p class="sub">하루 5쌍, 열 문장. 듣고, 대화하고, 직접 말해 보세요.</p></div></div>';
+  h+='<div><strong>'+dc+'</strong> / '+n+'일 완료</div><div class="progress"><i style="width:'+(dc/n*100)+'%"></i></div>';
+  h+='<button class="btn primary" id="go-next" style="width:100%">Day '+next+' 시작하기 · '+esc(DATA[next-1].t)+'</button>';
+  h+='<div class="tabs" role="tablist" style="margin-top:20px">';
+  for(var b=0;b<Math.ceil(n/15);b++)h+='<button class="tab" role="tab" data-b="'+b+'" aria-selected="'+(S.block===b)+'">Day '+(b*15+1)+'–'+Math.min(n,b*15+15)+'</button>';
+  h+='</div><div class="days">';
+  for(var d=S.block*15+1;d<=Math.min(n,S.block*15+15);d++){
+    h+='<button class="day'+(dayDone(d)?" done":"")+'" data-d="'+d+'"><b><em style="font-style:normal">Day '+d+'</em>'+(dayDone(d)?'<em style="font-style:normal">완료</em>':'')+'</b><span>'+esc(DATA[d-1].t)+'</span></button>';
+  }
+  h+='</div>';
+  app.innerHTML=h;
+  $("#go-next").onclick=function(){openDay(next);};
+  app.querySelectorAll(".tab").forEach(function(t){t.onclick=function(){S.block=+t.getAttribute("data-b");render();};});
+  app.querySelectorAll(".day").forEach(function(t){t.onclick=function(){openDay(+t.getAttribute("data-d"));};});
+}
+function openDay(n){S.day=n;S.block=Math.floor((n-1)/15);S.view="day";save();render();window.scrollTo(0,0);}
+function opt(list,sel,blank){
+  var h='<option value="">'+blank+'</option>';
+  list.forEach(function(v){h+='<option value="'+esc(v.name)+'"'+(v.name===sel?" selected":"")+'>'+esc(v.name)+' ('+esc(v.lang)+')</option>';});
+  return h;
+}
+function renderDay(app){
+  var D=DATA[S.day-1];
+  var h='<div class="top"><div><button class="btn small" id="back">← 목록</button>'+
+    '<h1 style="margin-top:12px">Day '+S.day+' · '+esc(D.t)+'</h1><p class="sub">'+esc(D.e)+'</p></div></div>';
+  h+='<button class="btn primary" id="all" style="width:100%">1~3단계 이어서 재생</button>';
+  h+='<div class="stages">';
+  STAGES.forEach(function(s){h+='<button class="stage" data-stage="'+s.id+'"><strong>'+s.name+'</strong><small>'+s.desc+'</small><span class="tag">미완료</span></button>';});
+  h+='</div><p class="note">4단계는 마이크가 필요해요. 크롬이나 엣지에서 파일을 직접 열고, 처음 뜨는 허용 창에서 "사이트에 있는 동안 허용"을 누르세요. 그다음부터는 문장마다 "다음"만 누르면 바로 들어요.</p>';
+  h+='<h2>오늘의 대화</h2><div class="script">';
+  D.p.forEach(function(q,i){
+    h+='<div class="pair" data-pair="'+i+'">'+
+     '<button class="line A" data-say="'+i+'A"><span class="who">A</span>'+(S.st.en?'<span class="en">'+esc(q[0])+'</span>':'')+'</button>'+
+     '<button class="line B" data-say="'+i+'B"><span class="who">B</span>'+(S.st.en?'<span class="en">'+esc(q[2])+'</span>':'')+'</button></div>';
+  });
+  h+='</div><p class="note">대화는 A와 B 영어 문장만 표시됩니다. 문장을 누르면 그 문장만 다시 들을 수 있어요.</p>';
+  h+='<details class="set"><summary>설정</summary><div class="grid2">'+
+    '<label>대답 시간<select id="s-delay"><option value="0.75">짧게</option><option value="1">보통</option><option value="1.4">길게</option><option value="1.9">아주 길게</option></select></label>'+
+    '<label>말하기 속도<select id="s-rate"><option value="0.75">느리게</option><option value="0.9">보통</option><option value="1">빠르게</option></select></label>'+
+    '<label>A 음성<select id="s-va">'+opt(V.en,V.a&&V.a.name,"자동")+'</select></label>'+
+    '<label>B 음성<select id="s-vb">'+opt(V.en,V.b&&V.b.name,"자동")+'</select></label>'+
+    '<label class="chk"><input type="checkbox" id="s-en"> 영어 문장 보기</label>'+
+    '<label class="chk"><input type="checkbox" id="s-kv"> 3단계에서 한글을 음성으로 읽기</label></div>'+
+    '<p class="note">'+(V.en.length?"이 기기의 영어 음성 "+V.en.length+"개를 사용할 수 있어요.":"영어 음성을 찾지 못했어요. 브라우저나 기기의 음성 설정을 확인해 주세요.")+(V.ko?"":" 한국어 음성이 없으면 한글은 화면으로만 보여 줍니다.")+'</p></details>';
+  app.innerHTML=h;
+  $("#s-delay").value=String(S.st.delay);$("#s-rate").value=String(S.st.rate);
+  $("#s-en").checked=S.st.en;$("#s-kv").checked=S.st.koVoice;
+  $("#back").onclick=function(){stopAll();S.view="home";render();};
+  $("#all").onclick=function(){playStages([1,2,3]);};
+  app.querySelectorAll(".stage").forEach(function(b){b.onclick=function(){var n=+b.getAttribute("data-stage");if(n===4)startSpeak();else playStages([n]);};});
+  app.querySelectorAll("[data-say]").forEach(function(b){b.onclick=function(){
+    var k=b.getAttribute("data-say"),i=+k.slice(0,-1),r=k.slice(-1),q=D.p[i];
+    playOne(r==="A"?q[0]:q[2],r);};});
+  function bind(id,fn){$(id).onchange=function(){fn(this);save();};}
+  bind("#s-delay",function(e){S.st.delay=+e.value;});
+  bind("#s-rate",function(e){S.st.rate=+e.value;});
+  bind("#s-va",function(e){S.st.vA=e.value;pickVoices();});
+  bind("#s-vb",function(e){S.st.vB=e.value;pickVoices();});
+  bind("#s-en",function(e){S.st.en=e.checked;renderKeepOpen();});
+  bind("#s-kv",function(e){S.st.koVoice=e.checked;});
+  paintStages();
+}
+function renderKeepOpen(){render();var d=document.querySelector("details.set");if(d)d.open=true;}
+
+
+/* ---------- 4단계: 말하기 코치 ---------- */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+var SP=null,REC=null;
+var CONTR={"i'm":"i am","i'll":"i will","i'd":"i would","i've":"i have","it's":"it is","that's":"that is","there's":"there is","what's":"what is","where's":"where is","he's":"he is","let's":"let us","don't":"do not","doesn't":"does not","didn't":"did not","can't":"can not","cannot":"can not","isn't":"is not","wasn't":"was not","shouldn't":"should not","we'll":"we will","we're":"we are","they'll":"they will","they're":"they are","you'll":"you will","you're":"you are","ok":"okay"};
+var NUM={"0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine","10":"ten","11":"eleven","12":"twelve","15":"fifteen","20":"twenty","30":"thirty","40":"forty","100":"hundred"};
+var HOMO=[["their","there","they're"],["to","too","two"],["your","you're"],["hear","here"],["our","are","hour"],["write","right"],["by","buy","bye"],["wear","where"],["for","four"],["its","it's"]];
+function toks(w){
+  w=w.toLowerCase().replace(/^\$/,"");
+  if(NUM[w])w=NUM[w];
+  if(CONTR[w])return CONTR[w].split(" ");
+  if(/'s$/.test(w)&&w.length>3)return [w.slice(0,-2)];
+  return [w];
+}
+function words(str){return (str.match(/[$A-Za-z0-9]+(?:'[A-Za-z]+)?/g)||[]);}
+function eq(a,b){
+  if(a===b)return true;
+  for(var i=0;i<HOMO.length;i++)if(HOMO[i].indexOf(a)>=0&&HOMO[i].indexOf(b)>=0)return true;
+  return false;
+}
+function hg(w){
+  w=w.toLowerCase();
+  if(HG[w])return HG[w];
+  var t=w.replace(/^\$/,"");
+  if(NUM[t]&&HG[NUM[t]])return HG[NUM[t]];
+  return null;
+}
+function evaluate(target,heard){
+  var tw=words(target),T=[],owner=[];
+  tw.forEach(function(w,i){toks(w).forEach(function(t){T.push(t);owner.push(i);});});
+  var H=[];words(heard).forEach(function(w){toks(w).forEach(function(t){H.push(t);});});
+  var n=T.length,m=H.length,L=[],i,j;
+  for(i=0;i<=n;i++){L.push([]);for(j=0;j<=m;j++)L[i].push(0);}
+  for(i=n-1;i>=0;i--)for(j=m-1;j>=0;j--)L[i][j]=eq(T[i],H[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  var hit=T.map(function(){return false;});i=0;j=0;
+  while(i<n&&j<m){if(eq(T[i],H[j])){hit[i]=true;i++;j++;}else if(L[i+1][j]>=L[i][j+1])i++;else j++;}
+  var ok=tw.map(function(){return true;});
+  hit.forEach(function(h,k){if(!h)ok[owner[k]]=false;});
+  var good=ok.filter(function(x){return x;}).length;
+  return {words:tw,ok:ok,score:tw.length?good/tw.length:0};
+}
+function tipFor(missed){
+  for(var k=0;k<missed.length;k++){
+    var w=missed[k].toLowerCase();
+    if(/th/.test(w))return "'"+missed[k]+"': th는 혀끝을 윗니와 아랫니 사이에 살짝 대고 바람을 내보내며 소리 내 보세요.";
+    if(/f|ph/.test(w))return "'"+missed[k]+"': f는 윗니를 아랫입술에 살짝 대고 바람을 내보내세요. 'ㅍ'이 아니에요.";
+    if(/v/.test(w))return "'"+missed[k]+"': v는 윗니를 아랫입술에 대고 목을 울려 'ㅂ'보다 가볍게 내세요.";
+    if(/^r|[^a-z]r/.test(w))return "'"+missed[k]+"': r은 혀끝을 입천장에 닿지 않게 말아서 소리 내세요.";
+    if(/l/.test(w))return "'"+missed[k]+"': l은 혀끝을 윗잇몸에 붙이고 소리 내세요. 끝의 l은 '르'보다 '을'에 가까워요.";
+    if(/[tdpkb]$/.test(w))return "'"+missed[k]+"': 끝소리 "+w.slice(-1)+"는 '으'를 붙이지 말고 짧게 끊어 주세요.";
+  }
+  return "빠진 단어를 천천히 또렷하게 한 번 더 말해 보세요. 문장 끝까지 끊기지 않게 이어 말하면 좋아요.";
+}
+var PRAISE=["아주 좋아요! 발음이 또렷해요.","훌륭해요! 원어민이 알아들을 정도예요.","정말 잘했어요! 이 느낌 그대로 가요.","완벽에 가까워요. 자신감이 느껴져요!"];
+var MID=["거의 다 왔어요! 표시된 단어만 다시 짚어 볼까요?","좋아요. 조금만 더 또렷하게 말해 봐요.","잘하고 있어요. 주황색 단어를 한 번 더 연습해요."];
+var LOW=["괜찮아요, 다시 한번 해 봐요. 정답을 먼저 듣고 따라 말해 보세요.","천천히 한 단어씩 말해 봐도 좋아요. '정답 듣기'를 눌러 보세요."];
+/* ---- 4단계 상태 ----
+   SP.st : "ready"(카드를 누르면 듣기) | "listen"(듣는 중) | "result"(채점 결과 표시)
+   MIC   : "off" | "starting"(start 호출, 허용 대기) | "on"(듣는 중인 세션 있음)
+   원칙  : 마이크 세션은 사용자가 누른 순간(카드, 다음, 건너뛰기, 시작)에만 새로 켠다.
+           세션이 저절로 꺼져도 자동으로 다시 켜지 않는다(파일로 열면 켤 때마다 허용 창이 뜨기 때문). */
+var MIC="off",RL=0,SILT=null,NOST=null,PASS=0.8,MAXTRY=3;
+function clearT(){clearTimeout(SILT);clearTimeout(NOST);SILT=NOST=null;}
+function spItem(){return SP.list[SP.order[SP.pos]];}
+function spRender(){if(SP&&S.view==="speak")renderSpeak($("#app"));}
+function startSpeak(){
+  if(P.playing)stopAll();
+  var D=DATA[S.day-1],list=[];
+  D.p.forEach(function(q){list.push({r:"A",en:q[0],ko:q[1]});list.push({r:"B",en:q[2],ko:q[3]});});
+  SP={list:list,order:list.map(function(x,i){return i;}),pos:0,res:{},st:"ready",heard:"",interim:"",hint:false,ev:null,fin:false,base:0,mute:false,tries:0,banner:"",notice:""};
+  S.view="speak";render();window.scrollTo(0,0);
+  if(SR){micEnsure();listenNow();}
+}
+function recStop(){
+  clearT();
+  if(REC){var r=REC;REC=null;r.onresult=r.onerror=r.onend=r.onstart=r.onaudiostart=null;try{r.abort();}catch(e){}}
+  MIC="off";RL=0;
+}
+function micOn(){if(MIC!=="on"){MIC="on";if(SP&&SP.st==="listen"){armWatch();spRender();}}}
+/* 사용자가 누른 처리 안에서만 호출 */
+function micEnsure(){
+  if(!SR||REC)return;
+  var r=new SR();REC=r;MIC="starting";RL=0;
+  r.lang="en-US";r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+  r.onstart=function(){if(REC===r)micOn();};
+  r.onaudiostart=function(){if(REC===r)micOn();};
+  r.onresult=function(e){
+    if(REC!==r)return;
+    RL=e.results.length;
+    if(MIC!=="on")micOn();
+    if(!SP||SP.mute||SP.st!=="listen")return;
+    var t=currentText(e);if(!t)return;
+    SP.interim=t;var node=$("#interim");if(node)node.textContent=t;
+    clearTimeout(NOST);clearTimeout(SILT);
+    SILT=setTimeout(function(){if(SP&&SP.st==="listen"&&SP.interim)finishListen(SP.interim);},1800);
+  };
+  r.onerror=function(e){
+    if(REC!==r||!SP)return;
+    var c=e.error||"";
+    if(c==="not-allowed"||c==="service-not-allowed")SP.banner="blocked";
+    else if(c==="audio-capture")SP.banner="nomic";
+    else if(c==="network")SP.banner="network";
+    else if(c!=="no-speech"&&c!=="aborted")SP.notice="마이크 오류("+c+"). 카드를 눌러 다시 시도하세요.";
+    else if(c==="aborted"&&location.protocol==="file:")SP.notice="마이크 연결이 중단됐어요. 파일로 열면 허용이 유지되지 않아요. 아래 방법(localhost)으로 열어 보세요.";
+  };
+  r.onend=function(){
+    if(REC!==r)return;
+    REC=null;MIC="off";RL=0;clearTimeout(NOST);
+    if(!SP)return;
+    if(SP.st==="listen"){
+      if(SP.interim){finishListen(SP.interim);return;}
+      clearT();SP.st="ready";
+      if(!SP.banner)SP.notice="마이크가 꺼졌어요. 카드를 누르면 다시 켜져요.";
+    }
+    spRender();
+  };
+  try{r.start();}catch(e){REC=null;MIC="off";}
+}
+function currentText(e){var t="";for(var i=SP.base;i<e.results.length;i++)t+=e.results[i][0].transcript+" ";return t.trim();}
+function armWatch(){
+  clearTimeout(NOST);
+  NOST=setTimeout(function(){
+    if(!SP||SP.st!=="listen"||SP.interim)return;
+    clearT();SP.st="ready";SP.notice="소리가 들리지 않았어요. 카드를 누르고 다시 말해 보세요.";spRender();
+  },10000);
+}
+/* 현재 문장을 듣기 시작 (세션이 이미 있을 때만 실제로 듣는다) */
+function listenNow(){
+  clearT();stopSpeech();
+  SP.interim="";SP.heard="";SP.notice="";
+  if(!REC){SP.st="ready";spRender();return;}
+  SP.st="listen";SP.base=RL;SP.banner="";
+  spRender();
+  if(MIC==="on")armWatch();
+}
+function finishListen(text){
+  clearT();S.st.micUsed=true;save();
+  var it=spItem();SP.heard=text;SP.ev=evaluate(it.en,text);SP.res[SP.order[SP.pos]]=SP.ev.score;
+  SP.st="result";SP.notice="";SP.base=RL;
+  if(SP.ev.score<PASS&&REC&&SP.tries<MAXTRY){SP.tries++;SP.notice="점수가 "+Math.round(SP.ev.score*100)+"점이에요. 곧 다시 듣기 시작해요 ("+SP.tries+"/"+MAXTRY+")";spRender();autoRetry();return;}
+  spRender();
+}
+/* 기준 점수 미만이면 카드를 누르지 않아도 "다시 해보세요" 후 자동으로 다시 듣는다 */
+function autoRetry(){
+  var me=SP,pos=SP.pos;
+  me.mute=true;
+  sleep(2500).then(function(){
+    if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak"){me.mute=false;return;}
+    return (V.ko&&S.st.koVoice?speak("다시 해보세요","ko-KR","A"):sleep(800)).then(function(){return sleep(300);}).then(function(){
+      me.mute=false;
+      if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak")return;
+      listenNow();SP.notice="다시 해보세요! 영어로 말해 보세요.";spRender();
+    });
+  });
+}
+/* 다음 문장으로 (사용자가 누른 처리) */
+function spNext(){
+  clearT();stopSpeech();
+  SP.pos++;SP.tries=0;SP.mute=false;SP.st="ready";SP.heard="";SP.ev=null;SP.hint=false;SP.notice="";SP.interim="";
+  if(SP.pos>=SP.order.length){SP.fin=true;var d=S.done[S.day]||(S.done[S.day]={});d[4]=true;save();spRender();window.scrollTo(0,0);return;}
+  window.scrollTo(0,0);
+  if(SR){micEnsure();listenNow();}else spRender();
+}
+function micLabel(){
+  return MIC==="on"?"마이크 켜짐":MIC==="starting"?"마이크 켜는 중":"마이크 꺼짐";
+}
+function renderSpeak(app){
+  app.classList.remove("playing");
+  var h="";
+  var topbar=function(label){return '<div class="top"><div><button class="btn small" id="sp-back">← 돌아가기</button><h1 style="margin-top:12px">Day '+S.day+' · 직접 말하기</h1><p class="sub">'+label+'</p></div></div>';};
+  if(SP.fin){
+    var sc=0,cnt=0,weak=[];
+    SP.list.forEach(function(it,i){var v=SP.res[i];if(typeof v==="number"){sc+=v;cnt++;if(v<0.8)weak.push(i);}else weak.push(i);});
+    var avg=cnt?Math.round(sc/cnt*100):0;
+    h+=topbar("10문장 마무리")+'<div class="res"><div class="fb '+(avg>=80?"good":avg>=50?"mid":"low")+'">평균 '+avg+'점 · '+(avg>=80?"오늘 정말 잘했어요!":avg>=50?"좋은 연습이었어요. 한 번 더 하면 더 좋아져요.":"시작이 반이에요. 내일 또 만나요.")+'</div>';
+    SP.list.forEach(function(it,i){var v=SP.res[i];h+='<div class="sumrow"><b class="badge '+it.r+'" style="padding:1px 8px;border-radius:999px;font-size:.75rem">'+it.r+'</b><span class="en">'+esc(it.en)+'</span><span>'+(typeof v==="number"?Math.round(v*100)+"점":"건너뜀")+'</span></div>';});
+    h+='<div class="row">'+(weak.length?'<button class="btn" id="sp-redo">약한 문장 '+weak.length+'개 다시 연습</button>':'')+'<button class="btn primary" id="sp-done">완료하고 목록으로</button></div></div>';
+    app.innerHTML=h;
+    if($("#sp-redo"))$("#sp-redo").onclick=function(){SP.order=weak;SP.pos=0;SP.tries=0;SP.fin=false;SP.ev=null;SP.hint=false;micEnsure();listenNow();};
+    $("#sp-done").onclick=function(){recStop();S.view="home";SP=null;render();window.scrollTo(0,0);};
+    $("#sp-back").onclick=function(){recStop();S.view="day";SP=null;render();};
+    return;
+  }
+  var it=spItem();
+  h+=topbar("문장 "+(SP.pos+1)+" / "+SP.order.length+" · "+micLabel());
+  h+='<div class="progress"><i style="width:'+(SP.pos/SP.order.length*100)+'%"></i></div>';
+  if(!SR){
+    h+='<div class="warn">이 브라우저에서는 음성 인식을 쓸 수 없어요. 컴퓨터나 안드로이드의 크롬 또는 엣지에서 앱 파일을 열어 주세요.</div>';
+  }else if(SP.banner==="blocked"){
+    h+='<div class="warn">마이크 사용이 거부되었어요. 링크 화면에서는 마이크를 쓸 수 없으니 내려받은 <b>영어회화앱.html</b> 파일을 크롬이나 엣지에서 여세요. 파일로 열었다면 주소창 왼쪽의 아이콘을 눌러 마이크를 허용한 뒤 카드를 누르세요.</div>';
+  }else if(SP.banner==="nomic"){
+    h+='<div class="warn">마이크를 찾지 못했어요. 마이크가 연결되어 있는지 확인하고 카드를 누르세요.</div>';
+  }else if(SP.banner==="network"){
+    h+='<div class="warn">음성 인식에는 인터넷 연결이 필요해요. 연결을 확인하고 카드를 누르세요.</div>';
+  }
+  var on=SP.st==="listen";
+  var cue;
+  if(on)cue=MIC==="starting"?"마이크 허용 창이 뜨면 '사이트에 있는 동안 허용'을 눌러 주세요.":"듣고 있어요. 영어로 말해 보세요.";
+  else if(SP.st==="result")cue="다시 말하려면 카드를 누르세요. 다음 문장은 '다음'을 누르세요.";
+  else cue="카드를 누르고 영어로 말해 보세요.";
+  h+='<button class="speakcard'+(on?" on listen":"")+'" id="sp-card" aria-label="눌러서 영어로 말하기"><span class="badge '+it.r+'" style="justify-self:start">'+it.r+' 역할</span>'+
+     '<span class="big">'+esc(it.ko)+'</span>'+
+     '<span class="cue"><i class="mic"></i>'+cue+'</span>'+(on?'<span id="interim" class="heard">'+esc(SP.interim)+'</span>':'')+
+     '</button>';
+  if(SP.notice)h+='<p class="note">'+esc(SP.notice)+'</p>';
+  if(SP.hint)h+='<div class="res"><h3>영어 문장 (힌트)</h3><div class="heard" style="font-family:var(--font-en)">'+esc(it.en)+'</div></div>';
+  if(SP.st==="result"&&SP.ev){
+    var ev=SP.ev,pct=Math.round(ev.score*100),cls=pct>=80?"good":pct>=50?"mid":"low";
+    var msgs=pct>=80?PRAISE:pct>=50?MID:LOW,msg=msgs[(SP.pos+SP.order[SP.pos])%msgs.length];
+    var hearWords=words(SP.heard).map(function(w){var k=hg(w);return k||w;}).join(" ");
+    var missed=ev.words.filter(function(w,i){return !ev.ok[i];});
+    h+='<div class="res"><div class="fb '+cls+'">'+pct+'점 · '+msg+'</div>'+
+       '<div><h3>내가 말한 소리 (한글)</h3><div class="heard">'+esc(hearWords)+'</div></div>'+
+       '<div><h3>정답 발음 (초록: 잘 들림 · 주황: 다시 연습)</h3><div class="chips">';
+    ev.words.forEach(function(w,i){h+='<span class="chip '+(ev.ok[i]?"ok":"miss")+'"><b>'+esc(w)+'</b><small>'+esc(hg(w)||"")+'</small></span>';});
+    h+='</div></div>';
+    if(missed.length)h+='<div class="tip">'+esc(tipFor(missed))+'</div>';
+    h+='</div>';
+  }
+  h+='<div class="row"><button class="btn" id="sp-hint">'+(SP.hint?"힌트 숨기기":"힌트 보기")+'</button><button class="btn" id="sp-hear">정답 듣기</button><button class="btn" id="sp-skip">건너뛰기</button>'+
+     (SP.st==="result"?'<button class="btn primary" id="sp-next">'+(SP.pos+1>=SP.order.length?"마무리":"다음")+'</button>':'')+'</div>';
+  app.innerHTML=h;
+  $("#sp-back").onclick=function(){recStop();stopSpeech();S.view="day";SP=null;render();};
+  $("#sp-card").onclick=function(){if(SP.st==="listen")return;SP.mute=false;micEnsure();listenNow();};
+  $("#sp-hint").onclick=function(){SP.hint=!SP.hint;spRender();};
+  $("#sp-hear").onclick=function(){
+    var was=SP.st==="listen";
+    if(was){clearT();SP.st="ready";SP.interim="";}
+    SP.mute=true;stopSpeech();spRender();
+    speak(it.en,"en-US",it.r).then(function(){setTimeout(function(){
+      if(!SP)return;SP.mute=false;SP.base=RL;
+      if(was&&S.view==="speak"&&!SP.fin)listenNow();
+    },500);});
+  };
+  $("#sp-skip").onclick=function(){SP.res[SP.order[SP.pos]]=null;spNext();};
+  if($("#sp-next"))$("#sp-next").onclick=spNext;
+}
+
+load();
+if(S.day<1||S.day>DATA.length)S.day=1;
+S.block=Math.floor((S.day-1)/15);
+render();
+})();
+</script>

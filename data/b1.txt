@@ -1,0 +1,90 @@
+## 아침 인사|Morning Greetings
+Good morning! Did you sleep well?|좋은 아침! 잘 잤어?|Yes, I slept like a log. How about you?|응, 푹 잤어. 너는?
+What's the plan for today?|오늘 계획이 뭐야?|I have a meeting at ten, and then I'll be home early.|열 시에 회의가 있고, 그다음엔 일찍 집에 올 거야.
+Do you want some coffee?|커피 마실래?|Yes, please. Just a little milk.|응, 부탁해. 우유만 조금.
+It looks cold outside.|밖이 추워 보여.|Then I should take a jacket.|그럼 재킷을 가져가야겠다.
+Have a good day!|좋은 하루 보내!|Thanks. You too. See you tonight!|고마워. 너도. 저녁에 봐!
+## 아침 식사 준비|Making Breakfast
+What would you like for breakfast?|아침으로 뭐 먹고 싶어?|Maybe eggs and toast.|계란이랑 토스트 정도면 좋겠어.
+How do you want your eggs?|계란은 어떻게 해 줄까?|Scrambled, please.|스크램블로 해 줘.
+Can you set the table?|식탁 좀 차려 줄래?|Sure. I'll get the plates and forks.|물론이지. 접시랑 포크 가져올게.
+Is the toast ready yet?|토스트 다 됐어?|Almost. It needs one more minute.|거의. 1분만 더 있으면 돼.
+Breakfast is ready!|아침 다 됐어!|Great. I'm starving.|좋아. 배고파 죽겠어.
+## 식사 시작과 권하기|Starting a Meal
+Dinner is served. Please sit down.|저녁 차렸어요. 앉으세요.|It smells delicious!|냄새 정말 좋다!
+Help yourself to some more rice.|밥 더 드세요.|Thank you. I'd love some more.|고마워요. 더 먹고 싶어요.
+Would you like some soup?|국 좀 드릴까요?|Yes, but just a small bowl, please.|네, 하지만 작은 그릇으로 조금만 주세요.
+Is the soup too salty?|국이 너무 짜요?|No, it's just right.|아니요, 딱 맞아요.
+Enjoy your meal!|맛있게 드세요!|Thank you. You made all this?|고마워요. 이걸 다 만들었어요?
+## 식사 에티켓|Table Manners
+Please don't talk with your mouth full.|입에 음식 넣고 말하지 마세요.|Sorry. I'll finish chewing first.|미안해요. 먼저 씹고 말할게요.
+Could you pass me the salt, please?|소금 좀 건네주실래요?|Here you go.|여기 있어요.
+Please keep your elbows off the table.|팔꿈치는 식탁에서 내려 주세요.|Okay. Is this better?|네. 이러면 괜찮아요?
+Try not to make noise when you eat soup.|국 먹을 때 소리 내지 않도록 해 봐요.|I'll try to be more careful.|좀 더 조심해 볼게요.
+Wait until everyone is seated to start.|모두 앉을 때까지 기다렸다가 시작해요.|Got it. Let's wait for Dad.|알겠어요. 아빠를 기다려요.
+## 식사 후 정리|After the Meal
+That was a wonderful dinner.|정말 훌륭한 저녁이었어요.|I'm glad you liked it.|좋아해 줘서 기쁘네요.
+Are you finished eating?|다 먹었니?|Yes, I'm full. Thank you for the meal.|네, 배불러요. 잘 먹었습니다.
+Please put your dishes in the sink.|그릇은 싱크대에 넣어 주세요.|Sure. I'll do it right now.|네. 지금 바로 할게요.
+Should I wipe the table?|식탁 닦을까요?|Yes, the cloth is by the sink.|응, 행주는 싱크대 옆에 있어.
+Is there any food left?|남은 음식 있어요?|Yes. Let's put it in the fridge.|네. 냉장고에 넣어 둬요.
+## 설거지|Washing Dishes
+Who is doing the dishes tonight?|오늘 밤 설거지는 누가 해?|It's my turn. You cooked.|내 차례야. 네가 요리했잖아.
+Can you dry while I wash?|내가 씻을 테니까 닦아 줄래?|Okay. Where does this bowl go?|좋아. 이 그릇은 어디에 둬?
+Be careful, that glass is fragile.|조심해, 그 유리잔은 깨지기 쉬워.|Don't worry. I've got it.|걱정 마. 잘 잡고 있어.
+This pan needs to soak for a while.|이 팬은 한동안 불려야 해.|I'll fill it with hot water.|뜨거운 물을 받아 놓을게.
+Did you turn on the dishwasher?|식기세척기 켰어?|Yes, it will be done in an hour.|응, 한 시간 뒤에 끝나.
+## 청소하기|Cleaning the House
+The living room is a mess.|거실이 엉망이야.|Let's clean it up together.|같이 치우자.
+Can you vacuum the floor?|청소기 좀 돌려 줄래?|Sure. Where's the vacuum cleaner?|물론이지. 청소기 어디 있어?
+I'll dust the shelves.|나는 선반 먼지를 털게.|Then I'll mop the kitchen floor.|그럼 나는 주방 바닥을 걸레질할게.
+Please pick up your toys.|장난감 좀 주워 주세요.|Okay, I'll put them in the box.|네, 상자에 넣을게요.
+The house looks so clean now!|집이 이제 정말 깨끗해 보여!|It feels so much better.|훨씬 기분 좋다.
+## 빨래|Doing Laundry
+The laundry basket is full.|빨래 바구니가 가득 찼어.|I'll start a load right now.|지금 바로 한 번 돌릴게.
+Can you separate the white clothes?|흰 옷은 따로 분리해 줄래?|Sure. Colors go in a different load.|물론이지. 색깔 옷은 따로 빨게.
+Did you add the detergent?|세제 넣었어?|Yes, and the fabric softener too.|응, 섬유유연제도 넣었어.
+Could you hang the clothes out to dry?|빨래 좀 널어 줄래?|Okay. It's sunny, so they'll dry quickly.|응. 날이 맑아서 금방 마를 거야.
+Please fold the towels.|수건 좀 개 줄래?|I'll do it after I finish this.|이것만 끝나면 할게.
+## 쓰레기와 분리수거|Trash and Recycling
+Can you take out the trash?|쓰레기 좀 버려 줄래?|Sure. Is it recycling day too?|물론이지. 오늘 분리수거 날이기도 해?
+Please separate the plastic and paper.|플라스틱과 종이를 나눠 주세요.|Okay. Where do the cans go?|네. 캔은 어디에 넣어요?
+Rinse the bottles before recycling them.|재활용하기 전에 병을 헹궈 줘.|I already did that.|이미 했어.
+The trash bag is almost full.|쓰레기봉투가 거의 찼어.|I'll put in a new one.|새 봉투로 갈아 놓을게.
+Don't forget the food waste.|음식물 쓰레기 잊지 마.|Thanks for reminding me.|알려 줘서 고마워.
+## 장보기 계획|Planning Groceries
+What do we need from the store?|가게에서 뭐가 필요해?|We're out of milk and eggs.|우유랑 계란이 떨어졌어.
+Let's make a shopping list.|장 볼 목록을 만들자.|Good idea. I'll write it down.|좋은 생각이야. 내가 적을게.
+Do we need any vegetables?|채소도 필요해?|Yes, some carrots and onions.|응, 당근이랑 양파 조금.
+How much is the budget this week?|이번 주 예산이 얼마야?|About one hundred dollars.|100달러 정도야.
+I'll go shopping this afternoon.|오늘 오후에 장 보러 갈게.|Thanks. Take the reusable bags.|고마워. 장바구니 가져가.
+## 감사와 사과|Thanks and Sorry
+Thank you for helping me today.|오늘 도와줘서 고마워.|You're welcome. Anytime.|천만에. 언제든지.
+I'm sorry I forgot the milk.|우유를 깜빡해서 미안해.|That's okay. It happens.|괜찮아. 그럴 수 있지.
+Thanks for cooking dinner.|저녁 차려 줘서 고마워.|My pleasure. I enjoyed it.|별말씀을. 즐거웠어.
+Excuse me, may I get past?|실례합니다, 지나가도 될까요?|Of course. Go ahead.|물론이죠. 지나가세요.
+I apologize for being late.|늦어서 죄송해요.|No problem. Come on in.|괜찮아요. 어서 들어와요.
+## 귀가 인사|Coming Home
+I'm home!|나 왔어!|Welcome back! How was your day?|어서 와! 오늘 어땠어?
+You look tired.|피곤해 보여.|It was a long day, but I'm okay.|긴 하루였지만 괜찮아.
+Wash your hands before dinner.|저녁 먹기 전에 손 씻어.|Okay. I'll be right there.|응. 금방 갈게.
+Did the kids get home safely?|아이들은 무사히 집에 왔어?|Yes, they're doing their homework.|응, 숙제하고 있어.
+What's for dinner tonight?|오늘 저녁 뭐야?|Your favorite, beef stew.|네가 좋아하는 소고기 스튜야.
+## 저녁 식탁 대화|Dinner Table Talk
+How was school today?|오늘 학교는 어땠니?|It was fun. We played soccer.|재미있었어요. 축구를 했어요.
+Did anything interesting happen?|재미있는 일 있었니?|My friend brought a puppy to class.|친구가 강아지를 교실에 데려왔어요.
+Would you like to tell us about your day?|오늘 하루 얘기해 줄래?|Sure. First, I had a big test.|좋아요. 먼저, 큰 시험이 있었어요.
+That sounds wonderful!|정말 멋지게 들리네!|Yes, I'm very proud of myself.|네, 제가 정말 자랑스러워요.
+Let's talk more after dinner.|저녁 먹고 더 얘기하자.|Okay. Can I have dessert first?|좋아요. 디저트 먼저 먹어도 돼요?
+## 잠자리 인사|Bedtime
+It's time to go to bed.|이제 잘 시간이야.|Just five more minutes, please.|딱 5분만 더요.
+Did you brush your teeth?|양치했니?|Yes, and I washed my face.|네, 세수도 했어요.
+Do you want me to read you a story?|이야기 읽어 줄까?|Yes, the one about the bear.|네, 곰 이야기요.
+Turn off the lights, please.|불 좀 꺼 줘.|Okay. Good night, sleep tight.|응. 잘 자, 푹 자.
+Sweet dreams. I love you.|좋은 꿈 꿔. 사랑해.|I love you too. Good night!|나도 사랑해요. 안녕히 주무세요!
+## 주말 아침 가족|Weekend Morning
+It's Saturday. We can sleep in.|토요일이야. 늦잠 자도 돼.|But I'm already awake.|그런데 난 벌써 깼어.
+What should we do today?|오늘 뭐 할까?|Let's go to the park.|공원에 가자.
+Shall I make pancakes?|팬케이크 만들까?|Yes, with lots of syrup!|응, 시럽 많이!
+Don't forget to bring a towel.|수건 챙기는 거 잊지 마.|I put it in the bag already.|이미 가방에 넣었어.
+Let's leave in thirty minutes.|30분 뒤에 출발하자.|Okay. I'll get dressed.|알겠어. 옷 입을게.
