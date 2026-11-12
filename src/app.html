@@ -146,18 +146,28 @@ function pickVoices(){
 }
 if(synth){pickVoices();synth.onvoiceschanged=function(){pickVoices();if(S.view==="day"&&!P.playing)render();};}
 
+/* SGEN: 재생을 끊을 때마다 올라간다. CUT: 재생 중인 소리를 실제로 끊은 시각.
+   UTT : 재생 중인 발화를 붙잡아 둔다(브라우저가 중간에 치워 버리면 끝났다는 신호가 오지 않는다). */
+var SGEN=0,CUT=0,UTT=null;
 function speak(text,lang,role,rate){
   return new Promise(function(res){
     if(!synth){setTimeout(res,600);return;}
-    var u=new SpeechSynthesisUtterance(text),done=false,t;
-    var ko=lang==="ko-KR";
-    u.lang=lang;u.rate=ko?1:(rate||S.st.rate);
-    var v=ko?V.ko:(role==="A"?V.a:V.b);if(v)u.voice=v;
-    if(!ko&&!V.sep)u.pitch=role==="A"?1.2:0.8;
-    function fin(){if(!done){done=true;clearTimeout(t);res();}}
-    u.onend=fin;u.onerror=fin;
-    t=setTimeout(fin,3500+text.length*130/u.rate);
-    synth.speak(u);
+    var g=SGEN;
+    function go(){
+      if(g!==SGEN){res();return;}
+      var u=new SpeechSynthesisUtterance(text),done=false,t;
+      var ko=lang==="ko-KR";
+      u.lang=lang;u.rate=ko?1:(rate||S.st.rate);
+      var v=ko?V.ko:(role==="A"?V.a:V.b);if(v)u.voice=v;
+      if(!ko&&!V.sep)u.pitch=role==="A"?1.2:0.8;
+      function fin(){if(!done){done=true;clearTimeout(t);if(UTT===u)UTT=null;res();}}
+      u.onend=fin;u.onerror=fin;
+      t=setTimeout(fin,3500+text.length*130/u.rate);
+      UTT=u;synth.speak(u);
+    }
+    /* 소리를 끊은 직후 바로 재생하면 첫 소리가 잘리거나 아예 안 나는 브라우저가 있어 잠깐 띄운다 */
+    var gap=CUT+150-Date.now();
+    if(gap>0)setTimeout(go,gap);else go();
   });
 }
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
@@ -209,7 +219,12 @@ function stageLabel(st){
   if(st.rounds)base+=" · "+st.round+"/"+st.rounds+"회"+(st.slow?" (천천히)":"");
   return base;
 }
-function stopSpeech(){if(synth)synth.cancel();}
+function stopSpeech(){
+  SGEN++;
+  if(!synth)return;
+  if(synth.speaking||synth.pending)CUT=Date.now();
+  synth.cancel();
+}
 function startFrom(i){
   P.tok++;var tok=P.tok;stopSpeech();
   P.i=Math.max(0,Math.min(i,P.steps.length-1));P.paused=false;P.playing=true;
@@ -270,7 +285,13 @@ function paintNow(st){
   var pr=$("#prog");if(pr)pr.style.width=(P.i/Math.max(1,P.steps.length)*100)+"%";
   var meta=$("#meta");if(meta)meta.textContent=stageLabel(st);
   var cnt=$("#cnt");if(cnt)cnt.textContent=(P.i+1)+" / "+P.steps.length;
-  if(st.t==="wait"&&st.kind==="gap"){return;}
+  if(st.t==="wait"&&st.kind==="gap"){
+    /* 쉬는 구간에서는 앞 문장을 그대로 둔다. 일시정지 후 다시 그려져 비어 있으면 앞 문장을 다시 채운다 */
+    if(box.firstChild)return;
+    var j=P.i-1;while(j>=0&&P.steps[j].t!=="say")j--;
+    if(j<0)return;
+    st=P.steps[j];
+  }
   var role=st.role||"A";
   var enText=(st.t==="say"&&st.lang==="en-US")?st.text:"";
   var koText=st.ko||"";
@@ -291,7 +312,8 @@ function paintNow(st){
   }
   box.innerHTML=html;
   document.querySelectorAll(".line.on").forEach(function(n){n.classList.remove("on");});
-  var ln=document.querySelector('[data-pair="'+st.pair+'"]');
+  var lr=(st.t==="wait"&&st.kind==="answer")?"B":role;
+  var ln=document.querySelector('[data-say="'+st.pair+lr+'"]');
   if(ln){ln.classList.add("on");}
 }
 function paintSheet(){
@@ -452,8 +474,13 @@ var LOW=["괜찮아요, 다시 한번 해 봐요. 정답을 먼저 듣고 따라
    SP.st : "ready"(카드를 누르면 듣기) | "listen"(듣는 중) | "result"(채점 결과 표시)
    MIC   : "off" | "starting"(start 호출, 허용 대기) | "on"(듣는 중인 세션 있음)
    원칙  : 마이크 세션은 사용자가 누른 순간(카드, 다음, 건너뛰기, 시작)에만 새로 켠다.
-           세션이 저절로 꺼져도 자동으로 다시 켜지 않는다(파일로 열면 켤 때마다 허용 창이 뜨기 때문). */
-var MIC="off",RL=0,SILT=null,NOST=null,PASS=0.8,MAXTRY=3;
+           세션이 저절로 꺼져도 자동으로 다시 켜지 않는다(파일로 열면 켤 때마다 허용 창이 뜨기 때문).
+   CONT  : 컴퓨터에서는 세션 하나를 켜 둔 채 여러 문장을 듣는다. 휴대폰 브라우저는 이어 듣기가 불안정하고
+           마이크가 켜져 있으면 스피커 소리가 작아지거나 끊기므로, 한 문장을 들을 때마다 세션을 끝낸다.
+   SP.seq: 누르거나 새로 듣기 시작할 때마다 올라간다. 기다리던 예약 동작(자동 재시도, 정답 듣기 뒤 처리)은
+           자기 번호가 바뀌었으면 아무것도 하지 않는다. */
+var MIC="off",RL=0,RES=null,SILT=null,NOST=null,PASS=0.8,MAXTRY=3;
+var CONT=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||"");
 function clearT(){clearTimeout(SILT);clearTimeout(NOST);SILT=NOST=null;}
 function spItem(){return SP.list[SP.order[SP.pos]];}
 function spRender(){if(SP&&S.view==="speak")renderSpeak($("#app"));}
@@ -461,26 +488,26 @@ function startSpeak(){
   if(P.playing)stopAll();
   var D=DATA[S.day-1],list=[];
   D.p.forEach(function(q){list.push({r:"A",en:q[0],ko:q[1]});list.push({r:"B",en:q[2],ko:q[3]});});
-  SP={list:list,order:list.map(function(x,i){return i;}),pos:0,res:{},st:"ready",heard:"",interim:"",hint:false,ev:null,fin:false,base:0,mute:false,tries:0,banner:"",notice:""};
+  SP={list:list,order:list.map(function(x,i){return i;}),pos:0,res:{},st:"ready",heard:"",interim:"",hint:false,ev:null,fin:false,base:0,skip:"",seq:0,resume:false,mute:false,tries:0,banner:"",notice:""};
   S.view="speak";render();window.scrollTo(0,0);
   if(SR){micEnsure();listenNow();}
 }
 function recStop(){
   clearT();
   if(REC){var r=REC;REC=null;r.onresult=r.onerror=r.onend=r.onstart=r.onaudiostart=null;try{r.abort();}catch(e){}}
-  MIC="off";RL=0;
+  MIC="off";RL=0;RES=null;
 }
 function micOn(){if(MIC!=="on"){MIC="on";if(SP&&SP.st==="listen"){armWatch();spRender();}}}
 /* 사용자가 누른 처리 안에서만 호출 */
 function micEnsure(){
   if(!SR||REC)return;
-  var r=new SR();REC=r;MIC="starting";RL=0;
-  r.lang="en-US";r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+  var r=new SR();REC=r;MIC="starting";RL=0;RES=null;
+  r.lang="en-US";r.interimResults=true;r.continuous=CONT;r.maxAlternatives=1;
   r.onstart=function(){if(REC===r)micOn();};
   r.onaudiostart=function(){if(REC===r)micOn();};
   r.onresult=function(e){
     if(REC!==r)return;
-    RL=e.results.length;
+    RL=e.results.length;RES=e.results;
     if(MIC!=="on")micOn();
     if(!SP||SP.mute||SP.st!=="listen")return;
     var t=currentText(e);if(!t)return;
@@ -495,11 +522,11 @@ function micEnsure(){
     else if(c==="audio-capture")SP.banner="nomic";
     else if(c==="network")SP.banner="network";
     else if(c!=="no-speech"&&c!=="aborted")SP.notice="마이크 오류("+c+"). 카드를 눌러 다시 시도하세요.";
-    else if(c==="aborted"&&location.protocol==="file:")SP.notice="마이크 연결이 중단됐어요. 파일로 열면 허용이 유지되지 않아요. 아래 방법(localhost)으로 열어 보세요.";
+    else if(c==="aborted"&&location.protocol==="file:")SP.notice="마이크 연결이 중단됐어요. 파일로 직접 열면 허용이 유지되지 않을 수 있어요. 카드를 눌러 다시 켜 주세요.";
   };
   r.onend=function(){
     if(REC!==r)return;
-    REC=null;MIC="off";RL=0;clearTimeout(NOST);
+    REC=null;MIC="off";RL=0;RES=null;clearTimeout(NOST);
     if(!SP)return;
     if(SP.st==="listen"){
       if(SP.interim){finishListen(SP.interim);return;}
@@ -510,48 +537,89 @@ function micEnsure(){
   };
   try{r.start();}catch(e){REC=null;MIC="off";}
 }
-function currentText(e){var t="";for(var i=SP.base;i<e.results.length;i++)t+=e.results[i][0].transcript+" ";return t.trim();}
+/* 이번에 듣기 시작한 뒤의 말만 모은다.
+   듣기 시작할 때 아직 확정되지 않은 결과(앞서 말한 것의 꼬리, 스피커에서 난 소리)가 남아 있으면
+   새로 하는 말이 그 결과에 이어 붙으므로, 그 결과를 통째로 버리지 않고 앞부분(SP.skip)만 떼어 낸다. */
+function markBase(){
+  SP.base=RL;SP.skip="";
+  if(RES&&RL>0&&RES.length===RL&&!RES[RL-1].isFinal){SP.base=RL-1;SP.skip=RES[RL-1][0].transcript;}
+}
+function dropHead(s,head){
+  var a=words(s),b=words(head),k=0;
+  while(k<a.length&&k<b.length&&a[k].toLowerCase()===b[k].toLowerCase())k++;
+  return a.slice(k).join(" ");
+}
+function currentText(e){
+  var t="";
+  for(var i=SP.base;i<e.results.length;i++){
+    var s=e.results[i][0].transcript;
+    if(i===SP.base&&SP.skip)s=dropHead(s,SP.skip);
+    t+=s+" ";
+  }
+  return t.replace(/\s+/g," ").trim();
+}
 function armWatch(){
   clearTimeout(NOST);
   NOST=setTimeout(function(){
     if(!SP||SP.st!=="listen"||SP.interim)return;
-    clearT();SP.st="ready";SP.notice="소리가 들리지 않았어요. 카드를 누르고 다시 말해 보세요.";spRender();
+    clearT();if(!CONT)recStop();
+    SP.st="ready";SP.notice="소리가 들리지 않았어요. 카드를 누르고 다시 말해 보세요.";spRender();
   },10000);
 }
 /* 현재 문장을 듣기 시작 (세션이 이미 있을 때만 실제로 듣는다) */
 function listenNow(){
   clearT();stopSpeech();
+  SP.seq++;SP.resume=false;SP.mute=false;
   SP.interim="";SP.heard="";SP.notice="";
   if(!REC){SP.st="ready";spRender();return;}
-  SP.st="listen";SP.base=RL;SP.banner="";
+  SP.st="listen";markBase();SP.banner="";
   spRender();
   if(MIC==="on")armWatch();
 }
 function finishListen(text){
   clearT();S.st.micUsed=true;save();
   var it=spItem();SP.heard=text;SP.ev=evaluate(it.en,text);SP.res[SP.order[SP.pos]]=SP.ev.score;
-  SP.st="result";SP.notice="";SP.base=RL;
+  SP.st="result";SP.notice="";
+  if(!CONT)recStop();
   if(SP.ev.score<PASS&&REC&&SP.tries<MAXTRY){SP.tries++;SP.notice="점수가 "+Math.round(SP.ev.score*100)+"점이에요. 곧 다시 듣기 시작해요 ("+SP.tries+"/"+MAXTRY+")";spRender();autoRetry();return;}
   spRender();
 }
-/* 기준 점수 미만이면 카드를 누르지 않아도 "다시 해보세요" 후 자동으로 다시 듣는다 */
+/* 기준 점수 미만이면 카드를 누르지 않아도 "다시 해보세요" 후 자동으로 다시 듣는다.
+   기다리는 동안 다른 버튼을 누르면(SP.seq 가 바뀌면) 이 예약은 취소된다. */
 function autoRetry(){
-  var me=SP,pos=SP.pos;
-  me.mute=true;
+  var me=SP,q=++SP.seq;
+  function live(){return SP===me&&me.seq===q&&me.st==="result"&&!me.fin&&S.view==="speak";}
+  me.mute=true;me.resume=true;
   sleep(2500).then(function(){
-    if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak"){me.mute=false;return;}
+    if(!live())return;
     return (V.ko&&S.st.koVoice?speak("다시 해보세요","ko-KR","A"):sleep(800)).then(function(){return sleep(300);}).then(function(){
-      me.mute=false;
-      if(SP!==me||me.pos!==pos||me.st!=="result"||me.fin||S.view!=="speak")return;
-      listenNow();SP.notice="다시 해보세요! 영어로 말해 보세요.";spRender();
+      if(!live())return;
+      listenNow();
+      SP.notice=SP.st==="listen"?"다시 해보세요! 영어로 말해 보세요.":"다시 해보세요! 카드를 누르고 영어로 말해 보세요.";spRender();
     });
+  });
+}
+/* 정답 듣기 (사용자가 누른 처리).
+   듣는 중이었거나 자동 재시도를 기다리던 중이면, 정답을 끝까지 들려준 뒤에 다시 듣기 시작한다. */
+function spHear(){
+  var me=SP,it=spItem(),q=++SP.seq;
+  clearT();
+  if(SP.st==="listen"){SP.resume=true;SP.st="ready";SP.interim="";}
+  if(!CONT)recStop();
+  SP.mute=true;SP.notice=SP.resume&&REC?"정답을 듣고 나면 다시 듣기 시작해요.":"";
+  stopSpeech();spRender();
+  speak(it.en,"en-US",it.r).then(function(){return sleep(500);}).then(function(){
+    if(SP!==me||me.seq!==q||S.view!=="speak")return;
+    me.mute=false;
+    if(me.resume&&!me.fin)listenNow();else{me.resume=false;if(me.notice){me.notice="";spRender();}}
   });
 }
 /* 다음 문장으로 (사용자가 누른 처리) */
 function spNext(){
   clearT();stopSpeech();
+  SP.seq++;SP.resume=false;
   SP.pos++;SP.tries=0;SP.mute=false;SP.st="ready";SP.heard="";SP.ev=null;SP.hint=false;SP.notice="";SP.interim="";
-  if(SP.pos>=SP.order.length){SP.fin=true;var d=S.done[S.day]||(S.done[S.day]={});d[4]=true;save();spRender();window.scrollTo(0,0);return;}
+  if(SP.pos>=SP.order.length){recStop();SP.fin=true;var d=S.done[S.day]||(S.done[S.day]={});d[4]=true;save();spRender();window.scrollTo(0,0);return;}
   window.scrollTo(0,0);
   if(SR){micEnsure();listenNow();}else spRender();
 }
@@ -581,7 +649,7 @@ function renderSpeak(app){
   if(!SR){
     h+='<div class="warn">이 브라우저에서는 음성 인식을 쓸 수 없어요. 컴퓨터나 안드로이드의 크롬 또는 엣지에서 앱 파일을 열어 주세요.</div>';
   }else if(SP.banner==="blocked"){
-    h+='<div class="warn">마이크 사용이 거부되었어요. 링크 화면에서는 마이크를 쓸 수 없으니 내려받은 <b>영어회화앱.html</b> 파일을 크롬이나 엣지에서 여세요. 파일로 열었다면 주소창 왼쪽의 아이콘을 눌러 마이크를 허용한 뒤 카드를 누르세요.</div>';
+    h+='<div class="warn">마이크 사용이 거부되었어요. 주소창 왼쪽의 아이콘을 눌러 마이크를 <b>허용</b>으로 바꾼 뒤 카드를 누르세요. 다른 앱 안에서 연 화면이라면 크롬이나 엣지에서 직접 열어 주세요.</div>';
   }else if(SP.banner==="nomic"){
     h+='<div class="warn">마이크를 찾지 못했어요. 마이크가 연결되어 있는지 확인하고 카드를 누르세요.</div>';
   }else if(SP.banner==="network"){
@@ -617,18 +685,20 @@ function renderSpeak(app){
   $("#sp-back").onclick=function(){recStop();stopSpeech();S.view="day";SP=null;render();};
   $("#sp-card").onclick=function(){if(SP.st==="listen")return;SP.mute=false;micEnsure();listenNow();};
   $("#sp-hint").onclick=function(){SP.hint=!SP.hint;spRender();};
-  $("#sp-hear").onclick=function(){
-    var was=SP.st==="listen";
-    if(was){clearT();SP.st="ready";SP.interim="";}
-    SP.mute=true;stopSpeech();spRender();
-    speak(it.en,"en-US",it.r).then(function(){setTimeout(function(){
-      if(!SP)return;SP.mute=false;SP.base=RL;
-      if(was&&S.view==="speak"&&!SP.fin)listenNow();
-    },500);});
-  };
+  $("#sp-hear").onclick=spHear;
   $("#sp-skip").onclick=function(){SP.res[SP.order[SP.pos]]=null;spNext();};
   if($("#sp-next"))$("#sp-next").onclick=spNext;
 }
+
+/* 다른 탭이나 앱으로 넘어가면 마이크를 끈다 (켜 둔 채로 두지 않는다) */
+document.addEventListener("visibilitychange",function(){
+  if(!document.hidden||!SP||!REC)return;
+  var was=SP.st==="listen";
+  recStop();SP.seq++;SP.resume=false;SP.mute=false;
+  if(was){SP.st="ready";SP.interim="";}
+  SP.notice=was?"화면을 벗어나 마이크를 껐어요. 카드를 누르면 다시 켜져요.":"";
+  spRender();
+});
 
 load();
 if(S.day<1||S.day>DATA.length)S.day=1;
