@@ -127,7 +127,7 @@ var STAGES = [
   {id:4,name:"4단계 · 직접 말하기 (마이크)",desc:"해석을 누르고 영어로 말하면 발음을 한글로 보여주고 피드백해 줘요"}
 ];
 var S = {day:1,block:0,view:"home",done:{},st:{delay:1,rate:0.9,en:true,ko:true,koVoice:true,vA:"",vB:"",auto:true}};
-var V = {a:null,b:null,ko:null,sep:false,en:[]};
+var V = {a:null,b:null,ko:null,la:null,lb:null,lko:null,sep:false,en:[]};
 var P = {steps:[],i:0,tok:0,paused:false,playing:false,stage:0};
 
 function load(){try{var r=localStorage.getItem("hs-v1");if(r){var o=JSON.parse(r);if(o.done)S.done=o.done;if(o.st)Object.assign(S.st,o.st);if(o.day)S.day=o.day;}}catch(e){}}
@@ -151,6 +151,11 @@ function pickVoices(){
   V.b=byName(S.st.vB)||en.filter(function(v){return mal.test(v.name)&&v!==V.a;})[0]||en.filter(function(v){return v!==V.a;})[0]||en[0]||null;
   V.sep=!!(V.a&&V.b&&V.a!==V.b);
   V.ko=all.filter(function(v){return /^ko/i.test(v.lang);})[0]||null;
+  /* 기기에 내장된 음성 (온라인 음성이 실패할 때 대신 쓴다) */
+  var loc=en.filter(function(v){return v.localService;});
+  V.la=loc.filter(function(v){return fem.test(v.name);})[0]||loc[0]||null;
+  V.lb=loc.filter(function(v){return mal.test(v.name)&&v!==V.la;})[0]||loc.filter(function(v){return v!==V.la;})[0]||V.la;
+  V.lko=all.filter(function(v){return /^ko/i.test(v.lang)&&v.localService;})[0]||null;
 }
 if(synth){pickVoices();synth.onvoiceschanged=function(){pickVoices();if(S.view==="day"&&!P.playing)render();};}
 
@@ -161,21 +166,31 @@ function speak(text,lang,role,rate){
   return new Promise(function(res){
     if(!synth){setTimeout(res,600);return;}
     var g=SGEN;
-    function go(){
+    /* n: 몇 번째 시도인지. 엣지의 온라인 음성은 몇 초 쉬었다 재생하면 첫 시도가 바로 실패하는 일이 잦다.
+       우리가 끊은 것이 아닌데 실패하면 같은 음성으로 한 번 더, 그래도 안 되면 기기에 내장된 음성으로 다시 읽는다. */
+    function go(n){
       if(g!==SGEN){res();return;}
       var u=new SpeechSynthesisUtterance(text),done=false,t;
       var ko=lang==="ko-KR";
       u.lang=lang;u.rate=ko?1:(rate||S.st.rate);
-      var v=ko?V.ko:(role==="A"?V.a:V.b);if(v)u.voice=v;
+      var v=ko?V.ko:(role==="A"?V.a:V.b);
+      if(n>=2){var lv=ko?V.lko:(role==="A"?V.la:V.lb);if(lv)v=lv;}
+      if(v)u.voice=v;
       if(!ko&&!V.sep)u.pitch=role==="A"?1.2:0.8;
       function fin(){if(!done){done=true;clearTimeout(t);if(UTT===u)UTT=null;res();}}
-      u.onend=fin;u.onerror=fin;
+      u.onend=fin;
+      u.onerror=function(){
+        if(done)return;
+        if(g!==SGEN||n>=4){fin();return;}
+        done=true;clearTimeout(t);if(UTT===u)UTT=null;
+        setTimeout(function(){go(n+1);},150);
+      };
       t=setTimeout(fin,3500+text.length*130/u.rate);
       UTT=u;synth.speak(u);
     }
     /* 소리를 끊은 직후 바로 재생하면 첫 소리가 잘리거나 아예 안 나는 브라우저가 있어 잠깐 띄운다 */
     var gap=CUT+150-Date.now();
-    if(gap>0)setTimeout(go,gap);else go();
+    if(gap>0)setTimeout(function(){go(0);},gap);else go(0);
   });
 }
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
